@@ -13,7 +13,25 @@ output "vm2_name" {
   value       = azurerm_linux_virtual_machine.vm2.name
 }
 
+output "vm1_private_ip" {
+  description = "Private IP address of VM1"
+  value       = azurerm_network_interface.nic1.private_ip_address
+}
+
+output "vm2_private_ip" {
+  description = "Private IP address of VM2"
+  value       = azurerm_network_interface.nic2.private_ip_address
+}
+
 output "resource_group" {
   description = "Name of the resource group"
   value       = azurerm_resource_group.main.name
+}
+
+output "bastion_ip" {
+  value = azurerm_public_ip.bastion_public_ip.ip_address
+}
+
+output "app_vm_ips" {
+  value = [for vm in azurerm_linux_virtual_machine.app : vm.private_ip_address]
 }
