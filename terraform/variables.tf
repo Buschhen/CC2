@@ -20,11 +20,11 @@ variable "admin_username" {
 }
 
 # Path to your public SSH key
-variable "ssh_public_key_path" {
-  description = "Path to the SSH public key file"
-  type        = string
-  default     = "~/.ssh/azure_p.pub"
-}
+# variable "ssh_public_key_path" {
+#   description = "Path to the SSH public key file"
+#   type        = string
+#   default     = "~/.ssh/azure_p.pub"
+# }
 
 variable "client_id" {
   description = "Azure Client ID (Service Principal)"
@@ -44,5 +44,10 @@ variable "tenant_id" {
 
 variable "subscription_id" {
   description = "Azure Subscription ID"
+  type        = string
+}
+
+variable "public_key" {
+  description = "SSH public key for VMs"
   type        = string
 }
