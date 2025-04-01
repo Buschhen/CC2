@@ -33,5 +33,8 @@ output "bastion_ip" {
 }
 
 output "app_vm_ips" {
-  value = [for vm in azurerm_linux_virtual_machine.app : vm.private_ip_address]
+  value = [
+    azurerm_linux_virtual_machine.vm1.private_ip_address,
+    azurerm_linux_virtual_machine.vm2.private_ip_address
+  ]
 }
