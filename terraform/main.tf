@@ -157,29 +157,29 @@ resource "azurerm_lb_probe" "tcp" {
 }
 
 
-# resource "azurerm_lb_rule" "http" {
-#   name                           = "http-rule"
-#   loadbalancer_id                = azurerm_lb.main.id
-#   protocol                       = "Tcp"
-#   frontend_port                  = 80
-#   backend_port                   = 80
-#   frontend_ip_configuration_name = "PublicIPAddress"
-#   backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
-#   probe_id                       = azurerm_lb_probe.http.id
-# }
-
-resource "azurerm_lb_rule" "allow_all" {
-  name                            = "allow-all-rule"
-  loadbalancer_id                 = azurerm_lb.main.id
-  protocol                        = "All"  # <--- Allow all protocols
-  frontend_port                   = 0      # <--- Required when protocol = "All"
-  backend_port                    = 0      # <--- Required when protocol = "All"
+resource "azurerm_lb_rule" "http" {
+  name                           = "http-rule"
+  loadbalancer_id                = azurerm_lb.main.id
+  protocol                       = "Tcp"
+  frontend_port                  = 80
+  backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress"
-  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool.id]
-  probe_id                        = azurerm_lb_probe.tcp.id
-  enable_floating_ip              = false
-  idle_timeout_in_minutes         = 4
+  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
+  probe_id                       = azurerm_lb_probe.tcp.id
 }
+
+# resource "azurerm_lb_rule" "allow_all" {
+#   name                            = "allow-all-rule"
+#   loadbalancer_id                 = azurerm_lb.main.id
+#   protocol                        = "All"  # <--- Allow all protocols
+#   frontend_port                   = 0      # <--- Required when protocol = "All"
+#   backend_port                    = 0      # <--- Required when protocol = "All"
+#   frontend_ip_configuration_name = "PublicIPAddress"
+#   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool.id]
+#   probe_id                        = azurerm_lb_probe.tcp.id
+#   enable_floating_ip              = false
+#   idle_timeout_in_minutes         = 4
+# }
 
 
 # Web Server NICs
