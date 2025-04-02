@@ -87,8 +87,8 @@ jobs:
         env:
           APP_VM_IPS: ${{ env.app_vm_ips }}
         run: |
-          echo '${{ env.APP_VM_IPS }}'
-          
+          echo "${{ env.APP_VM_IPS }}" 
+
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} << EOF
             sudo apt update && sudo apt install -y ansible git jq
 
@@ -99,7 +99,7 @@ jobs:
 
             cat ${{ env.ANSIBLE_DIR }}/inventory.ini
 
-            for ip in $(echo '${{ env.APP_VM_IPS }}' | jq -r '.[]'); do
+            for ip in $(echo "${{ env.APP_VM_IPS }}"" | jq -r '.[]'); do
               echo "\$ip ansible_user=azureuser" >> inventory.ini
             done
 
