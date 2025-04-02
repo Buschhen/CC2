@@ -87,6 +87,8 @@ jobs:
         env:
           APP_VM_IPS: ${{ env.app_vm_ips }}
         run: |
+          echo '${{ env.APP_VM_IPS }}'
+          
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} << EOF
             sudo apt update && sudo apt install -y ansible git jq
 
