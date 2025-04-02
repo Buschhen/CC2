@@ -88,11 +88,11 @@ jobs:
       - name: SSH to Bastion and run Ansible
 
         run: |
-          echo "Debug: APP_VM_IPS=${{ needs.terraform.outputs.tf_output.app_vm_ips }}"
+          echo "Debug: APP_VM_IPS=${{ needs.terraform.outputs.app_vm_ips }}"
           
           # Prepare the inventory content on the GitHub runner
           INVENTORY_CONTENT="[webservers]\n"
-          for ip in $(echo '${{ needs.terraform.outputs.tf_output.app_vm_ips }}' | jq -r '.[]'); do
+          for ip in $(echo '${{ needs.terraform.outputs.app_vm_ips }}' | jq -r '.[]'); do
             INVENTORY_CONTENT+="\n${ip} ansible_user=azureuser"
           done
 
