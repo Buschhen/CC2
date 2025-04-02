@@ -19,7 +19,7 @@
       git:
         repo: "{{ repo_url }}"
         dest: "{{ project_dir }}"
-        version: main
+        version: master
         force: yes
 
     - name: Create Python virtual environment
