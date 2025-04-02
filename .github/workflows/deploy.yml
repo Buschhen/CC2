@@ -99,7 +99,11 @@ jobs:
           echo "--- Generated inventory.ini ---"
           cat inventory.ini
 
+          echo "${SSH_KEY}" > id_rsa
+          chmod 600 id_rsa
+
           scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
+          scp -o StrictHostKeyChecking=no -i id_rsa id_rsa azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/.ssh/id_rsa
 
           # Escape properly and SSH to bastion
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} <<EOF
@@ -110,10 +114,8 @@ jobs:
             mv inventory.ini ./repo/ansible/
             cd repo/ansible
 
-            # Write SSH private key to file
-            echo "${SSH_KEY}" > ~/.ssh/id_rsa
+            echo -e "[defaults]\nhost_key_checking = False" > ansible.cfg
             chmod 600 ~/.ssh/id_rsa
-
             echo "--- Generated inventory.ini ---"
             cat inventory.ini
 
