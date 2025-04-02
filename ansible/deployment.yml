@@ -4,8 +4,8 @@
   become: yes
 
   vars:
-    project_dir: /opt/cloud-docsearch
-    repo_url: https://github.com/yourusername/cloud-docsearch.git  # replace with your repo
+    project_dir: /repo
+    repo_url: https://github.com/Buschhen/CC2.git   # replace with your repo
     venv_dir: "{{ project_dir }}/venv"
 
   tasks:
