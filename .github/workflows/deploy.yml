@@ -99,7 +99,7 @@ jobs:
           echo "--- Generated inventory.ini ---"
           cat inventory.ini
 
-          scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@$BASTION_IP:/home/azureuser/repo/${{ env.ANSIBLE_DIR }}
+          scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/repo/${{ env.ANSIBLE_DIR }}
 
           # Escape properly and SSH to bastion
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} <<EOF
