@@ -15,8 +15,8 @@ def get_vm_name():
 
 @app.route("/")
 def home():
-    vm_name = get_vm_name()
-    return f"<h1>Hello from VM: {vm_name}</h1>"
+    # vm_name = get_vm_name()
+    return f"<h1>Hello from VM: test</h1>"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)

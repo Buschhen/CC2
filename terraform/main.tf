@@ -6,6 +6,7 @@ terraform {
     }
   }
 }
+##todo nic into one with count
 
 provider "azurerm" {
   features {}
@@ -67,7 +68,7 @@ resource "azurerm_network_security_group" "web_nsg" {
     destination_address_prefix = "*"
   }
 }
-
+# Associate the Network Security Group to the subnet
 resource "azurerm_subnet_network_security_group_association" "assoc" {
   subnet_id                 = azurerm_subnet.main.id
   network_security_group_id = azurerm_network_security_group.web_nsg.id
