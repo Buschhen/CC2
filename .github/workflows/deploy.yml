@@ -99,5 +99,5 @@ jobs:
               echo "\$ip ansible_user=azureuser" >> inventory.ini
             done
 
-            ansible-playbook -i inventory.ini playbook.yml
+            ansible-playbook -i inventory.ini deployment.yml
           EOF
