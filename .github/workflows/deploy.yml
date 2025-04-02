@@ -86,22 +86,28 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: SSH to Bastion and run Ansible
-
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           echo "Debug: APP_VM_IPS=${{ needs.terraform.outputs.app_vm_ips }}"
-          
-          # Prepare the inventory content on the GitHub runner
-          INVENTORY_CONTENT="[webservers]\n"
-          for ip in $(echo '${{ needs.terraform.outputs.app_vm_ips }}' | jq -r '.[]'); do
-            INVENTORY_CONTENT+="\n${ip} ansible_user=azureuser"
-          done
 
           # Escape properly and SSH to bastion
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} <<EOF
             sudo apt update && sudo apt install -y ansible git
 
+            # Write SSH private key to file
+            echo "${SSH_KEY}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
             cd repo/${{ env.ANSIBLE_DIR }}
+
+
+            # Prepare the inventory content on the GitHub runner
+            INVENTORY_CONTENT="[webservers]\n"
+            for ip in $(echo '${{ needs.terraform.outputs.app_vm_ips }}' | jq -r '.[]'); do
+              INVENTORY_CONTENT+="\n${ip} ansible_user=azureuser ansible_ssh_private_key_file=~/.ssh/id_rsa"
+            done
 
             echo -e "$INVENTORY_CONTENT" > inventory.ini
             echo "Generated inventory.ini:"
