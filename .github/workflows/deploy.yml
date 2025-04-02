@@ -48,6 +48,7 @@ jobs:
 
     outputs:
       bastion_ip: ${{ steps.output.outputs.bastion_ip }}
+      app_vm_ips: ${{ steps.output.outputs.app_vm_ips }}
 
     steps:
       - name: Checkout repository
