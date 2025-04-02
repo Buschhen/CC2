@@ -160,12 +160,12 @@ resource "azurerm_lb_probe" "http" {
 resource "azurerm_lb_rule" "http" {
   name                           = "http-rule"
   loadbalancer_id                = azurerm_lb.main.id
-  protocol                       = "tcp"
+  protocol                       = "http"
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress"
   backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
-  probe_id                       = azurerm_lb_probe.tcp.id
+  probe_id                       = azurerm_lb_probe.http.id
 }
 
 # resource "azurerm_lb_rule" "allow_all" {
