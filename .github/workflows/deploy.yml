@@ -99,13 +99,15 @@ jobs:
           echo "--- Generated inventory.ini ---"
           cat inventory.ini
 
-          scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/repo/ansible
+          scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
 
           # Escape properly and SSH to bastion
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} <<EOF
             sudo apt update && sudo apt install -y ansible git
 
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
+
+            mv inventory.ini ./repo/ansible/
             cd repo/ansible
 
             # Write SSH private key to file
@@ -114,7 +116,6 @@ jobs:
 
             echo "--- Generated inventory.ini ---"
             cat inventory.ini
-            ls
 
             ansible-playbook -i inventory.ini deployment.yml
           EOF
