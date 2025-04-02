@@ -93,7 +93,7 @@ jobs:
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
             cd repo/${{ env.ANSIBLE_DIR }}
 
-            echo "[webservers]" > inventory.ini
+            echo "[webservers]" > {{ env.ANSIBLE_DIR }}/inventory.ini
 
             cat ${{ env.ANSIBLE_DIR }}/inventory.ini
 
