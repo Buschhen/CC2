@@ -93,7 +93,9 @@ jobs:
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
             cd repo/${{ env.ANSIBLE_DIR }}
 
-            echo "[web]" > inventory.ini
+            echo "[webservers]" > inventory.ini
+
+            cat ${{ env.ANSIBLE_DIR }}/inventory.ini
 
             for ip in $(echo '${{ env.APP_VM_IPS }}' | jq -r '.[]'); do
               echo "\$ip ansible_user=azureuser" >> inventory.ini
