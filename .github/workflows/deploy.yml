@@ -66,12 +66,7 @@ jobs:
         id: output
         run: |
           echo "bastion_ip=$(cd $TF_DIR && terraform output -raw bastion_ip)" >> $GITHUB_OUTPUT
-          echo "app_vm_ips=$(cd $TF_DIR && terraform output -json app_vm_ips)" >> $GITHUB_ENV
-
-      - name: Get Terraform Outputs
-        id: tf_output
-        run: |
-          echo "app_vm_ips=$(cd terraform && terraform output -json app_vm_ips)" >> $GITHUB_OUTPUT
+          echo "app_vm_ips=$(cd $TF_DIR && terraform output -json app_vm_ips)" >> $GITHUB_OUTPUT
 
 
   ansible:
@@ -90,14 +85,13 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: SSH to Bastion and run Ansible
-        env:
-          APP_VM_IPS: ${{ needs.terraform.outputs.tf_output.app_vm_ips }}
+
         run: |
-          echo "Debug: APP_VM_IPS=${APP_VM_IPS}"
+          echo "Debug: APP_VM_IPS=${{ needs.terraform.outputs.tf_output.app_vm_ips }}"
           
           # Prepare the inventory content on the GitHub runner
           INVENTORY_CONTENT="[webservers]\n"
-          for ip in $(echo '${{ env.APP_VM_IPS }}' | jq -r '.[]'); do
+          for ip in $(echo '${{ needs.terraform.outputs.tf_output.app_vm_ips }}' | jq -r '.[]'); do
             INVENTORY_CONTENT+="\n${ip} ansible_user=azureuser"
           done
 
