@@ -97,11 +97,11 @@ jobs:
 
             echo "[webservers]" > inventory.ini
 
-            cat inventory.ini
-
             for ip in $(echo '${{ env.APP_VM_IPS }}' | jq -r '.[]'); do
               echo "\$ip ansible_user=azureuser" >> inventory.ini
             done
+
+            cat inventory.ini
 
             ansible-playbook -i inventory.ini deployment.yml
           EOF
