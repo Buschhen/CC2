@@ -137,26 +137,50 @@ resource "azurerm_lb_backend_address_pool" "pool" {
   loadbalancer_id     = azurerm_lb.main.id
 }
 
-resource "azurerm_lb_probe" "http" {
-  name                = "http-probe"
+# resource "azurerm_lb_probe" "http" {
+#   name                = "http-probe"
+#   loadbalancer_id     = azurerm_lb.main.id
+#   protocol            = "Http"
+#   port                = 80
+#   request_path        = "/"
+#   interval_in_seconds = 5
+#   number_of_probes    = 2
+# }
+
+resource "azurerm_lb_probe" "tcp" {
+  name                = "tcp-probe"
   loadbalancer_id     = azurerm_lb.main.id
-  protocol            = "Http"
-  port                = 80
-  request_path        = "/"
+  protocol            = "Tcp"
+  port                = 22  # or 80 or whatever port your VMs accept
   interval_in_seconds = 5
   number_of_probes    = 2
 }
 
-resource "azurerm_lb_rule" "http" {
-  name                           = "http-rule"
-  loadbalancer_id                = azurerm_lb.main.id
-  protocol                       = "Tcp"
-  frontend_port                  = 80
-  backend_port                   = 80
+
+# resource "azurerm_lb_rule" "http" {
+#   name                           = "http-rule"
+#   loadbalancer_id                = azurerm_lb.main.id
+#   protocol                       = "Tcp"
+#   frontend_port                  = 80
+#   backend_port                   = 80
+#   frontend_ip_configuration_name = "PublicIPAddress"
+#   backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
+#   probe_id                       = azurerm_lb_probe.http.id
+# }
+
+resource "azurerm_lb_rule" "allow_all" {
+  name                            = "allow-all-rule"
+  loadbalancer_id                 = azurerm_lb.main.id
+  protocol                        = "All"  # <--- Allow all protocols
+  frontend_port                   = 0      # <--- Required when protocol = "All"
+  backend_port                    = 0      # <--- Required when protocol = "All"
   frontend_ip_configuration_name = "PublicIPAddress"
-  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
-  probe_id                       = azurerm_lb_probe.http.id
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool.id]
+  probe_id                        = azurerm_lb_probe.tcp.id
+  enable_floating_ip              = false
+  idle_timeout_in_minutes         = 4
 }
+
 
 # Web Server NICs
 resource "azurerm_network_interface" "nic1" {
