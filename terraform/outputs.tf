@@ -33,8 +33,8 @@ output "bastion_ip" {
 }
 
 output "app_vm_ips" {
-  value = [
+  value = jsonencode([
     azurerm_linux_virtual_machine.vm1.private_ip_address,
     azurerm_linux_virtual_machine.vm2.private_ip_address
-  ]
+  ])
 }

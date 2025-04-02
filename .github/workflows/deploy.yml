@@ -67,7 +67,7 @@ jobs:
         id: output
         run: |
           echo "bastion_ip=$(cd $TF_DIR && terraform output -raw bastion_ip)" >> $GITHUB_OUTPUT
-          echo "app_vm_ips=$(cd $TF_DIR && terraform output -raw app_vm_ips)" >> $GITHUB_OUTPUT
+          echo "app_vm_ips=$(cd $TF_DIR && terraform output -json app_vm_ips)" >> $GITHUB_OUTPUT
 
 
   ansible:
