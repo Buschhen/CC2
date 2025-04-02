@@ -103,22 +103,18 @@ jobs:
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} <<EOF
             sudo apt update && sudo apt install -y ansible git
 
-            echo "[webservers]" > inventory.ini
-            # for ip in $(echo '${{ needs.terraform.outputs.app_vm_ips }}' | jq -r '.[]'); do
-              echo "${ip} ansible_user=azureuser ansible_ssh_private_key_file=~/.ssh/id_rsa" >> inventory.ini
-            done
-
-            echo "Generated inventory.ini:"
-            cat inventory.ini
+            rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
+            cd repo/${{ env.ANSIBLE_DIR }}
 
             # Write SSH private key to file
             echo "${SSH_KEY}" > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
 
-            rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
-            cd repo/${{ env.ANSIBLE_DIR }}
+            echo "[webservers]" > inventory.ini
+            echo "${{ needs.terraform.outputs.app_vm_ips }}" | jq -r '.[]' | while read ip; do
+            echo "$ip ansible_user=azureuser ansible_ssh_private_key_file=~/.ssh/id_rsa" >> inventory.ini
+            done
 
-            # echo -e "$INVENTORY_CONTENT" > inventory.ini
             echo "Generated inventory.ini:"
             cat inventory.ini
 
