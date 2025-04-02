@@ -114,7 +114,7 @@ jobs:
 
             echo "--- Generated inventory.ini ---"
             cat inventory.ini
-            echo "ls"
+            ls
 
             ansible-playbook -i inventory.ini deployment.yml
           EOF
