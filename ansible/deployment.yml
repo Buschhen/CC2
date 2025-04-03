@@ -6,7 +6,7 @@
   vars:
     project_dir: /repo
     repo_url: https://github.com/Buschhen/CC2.git   # replace with your repo
-    venv_dir: "repo/venv"
+    venv_dir: /repo/venv
 
   tasks:
     - name: Install required apt packages
