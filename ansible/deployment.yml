@@ -9,6 +9,14 @@
     venv_dir: /repo/venv
 
   tasks:
+    - name: 🔍 DEBUG - Show current hostname
+      command: hostname
+      register: hostname_output
+
+    - name: 🔍 DEBUG - Print hostname
+      debug:
+        msg: "Running on host: {{ hostname_output.stdout }}"
+
     - name: Install required apt packages
       apt:
         name: [git, python3-pip, python3-venv]
@@ -37,3 +45,27 @@
         nohup {{ venv_dir }}/bin/python {{ project_dir }}/app/main.py > /var/log/flask.log 2>&1 &
       args:
         executable: /bin/bash
+
+    - name: 🔍 DEBUG - Show running Python processes
+      shell: pgrep -fl python
+      register: python_procs
+
+    - name: 🔍 DEBUG - Print Python processes
+      debug:
+        var: python_procs.stdout_lines
+        
+    - name: 🔍 DEBUG - Check if app is running on port 80
+      shell: ss -tulpn | grep :80 || true
+      register: port_check
+
+    - name: 🔍 DEBUG - Show port 80 processes
+      debug:
+        var: port_check.stdout_lines
+
+    - name: 🔍 DEBUG - Tail Flask logs
+      shell: tail -n 20 /var/log/flask.log || echo "log not found"
+      register: flask_log
+
+    - name: 🔍 DEBUG - Show Flask logs
+      debug:
+        var: flask_log.stdout_lines
