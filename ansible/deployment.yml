@@ -53,7 +53,7 @@
     - name: 🔍 DEBUG - Print Python processes
       debug:
         var: python_procs.stdout_lines
-        
+
     - name: 🔍 DEBUG - Check if app is running on port 80
       shell: ss -tulpn | grep :80 || true
       register: port_check
@@ -69,3 +69,11 @@
     - name: 🔍 DEBUG - Show Flask logs
       debug:
         var: flask_log.stdout_lines
+
+    - name: 🔍 DEBUG - Check if Flask is installed
+      shell: |
+        source "{{ venv_dir }}/bin/activate"
+        python -c "import flask; print('Flask is installed')"
+      args:
+        executable: /bin/bash
+
