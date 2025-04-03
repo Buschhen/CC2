@@ -51,8 +51,7 @@
         fi
       args:
         executable: /bin/bash
-
-
+        
     - name: Start Flask app (simple background)
       shell: |
         nohup {{ venv_dir }}/bin/python {{ project_dir }}/app/main.py > /var/log/flask.log 2>&1 &
