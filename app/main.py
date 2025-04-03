@@ -9,5 +9,4 @@ def hello():
     return f'Hello, World! This is VM: {hostname}'
 
 if __name__ == '__main__':
-    print('testing')
     app.run(host='0.0.0.0', port=80)
