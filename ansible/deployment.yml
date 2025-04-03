@@ -6,7 +6,7 @@
   vars:
     project_dir: /repo
     repo_url: https://github.com/Buschhen/CC2.git   # replace with your repo
-    venv_dir: "{{ project_dir }}/venv"
+    venv_dir: "repo/venv"
 
   tasks:
     - name: Install required apt packages
@@ -31,12 +31,6 @@
       pip:
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
-
-    - name: Copy .env file (optional)
-      copy:
-        src: ../.env
-        dest: "{{ project_dir }}/.env"
-        mode: 0600
 
     - name: Start Flask app (simple background)
       shell: |
