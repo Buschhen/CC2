@@ -39,6 +39,19 @@
       pip:
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
+    
+    - name: 🔪 Stop any running Flask apps (on port 80)
+      shell: |
+        pids=$(lsof -t -i:80 -sTCP:LISTEN || true)
+        if [ -n "$pids" ]; then
+          echo "Killing old Flask processes: $pids"
+          kill -9 $pids
+        else
+          echo "No Flask app running on port 80"
+        fi
+      args:
+        executable: /bin/bash
+
 
     - name: Start Flask app (simple background)
       shell: |
