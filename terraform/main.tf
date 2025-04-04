@@ -130,7 +130,7 @@ resource "azurerm_lb_probe" "http" {
   name                = "http-probe"
   loadbalancer_id     = azurerm_lb.main.id
   protocol            = "Http"
-  port                = 80
+  port                = 8080
   request_path        = "/"
   interval_in_seconds = 5
   number_of_probes    = 2
