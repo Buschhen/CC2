@@ -82,7 +82,7 @@
         var: python_procs.stdout_lines
 
     - name: 🔍 DEBUG - Check if app is running on port 80
-      shell: ss -tulpn | grep :80 || true
+      shell: ss -tulpn | grep :8080 || true
       register: port_check
 
     - name: 🔍 DEBUG - Show port 80 processes
