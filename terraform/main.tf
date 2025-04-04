@@ -51,7 +51,7 @@ resource "azurerm_network_security_group" "web_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "80"
+    destination_port_range     = "8080"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -140,7 +140,7 @@ resource "azurerm_lb_rule" "http" {
   name                           = "http-rule"
   loadbalancer_id                = azurerm_lb.main.id
   protocol                       = "Tcp"
-  frontend_port                  = 80
+  frontend_port                  = 8080
   backend_port                   = 8080
   frontend_ip_configuration_name = "PublicIPAddress"
   backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
