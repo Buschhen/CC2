@@ -3,3 +3,5 @@ terraform/terraform.exe
 .terraform/
 
 .vscode
+
+.env
