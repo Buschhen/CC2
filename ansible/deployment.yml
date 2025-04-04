@@ -5,7 +5,7 @@
 
   vars:
     project_dir: /repo
-    repo_url: https://github.com/Buschhen/CC2.git   # replace with your repo
+    repo_url: https://github.com/Buschhen/CC2.git
     venv_dir: /repo/venv
 
   tasks:
@@ -104,3 +104,11 @@
       args:
         executable: /bin/bash
 
+    - name: 🔍 Show Flask service logs (from journalctl)
+      shell: journalctl -u flask --no-pager -n 30 || cat /var/log/flask.log || echo "No logs found"
+      register: flask_logs
+      changed_when: false
+
+    - name: 🧾 Print Flask logs
+      debug:
+        var: flask_logs.stdout_lines
