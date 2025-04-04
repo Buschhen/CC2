@@ -56,6 +56,18 @@ resource "azurerm_network_security_group" "web_nsg" {
     destination_address_prefix = "*"
   }
 
+    security_rule {
+    name                       = "AllowHTTP80"
+    priority                   = 120
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
   security_rule {
     name                       = "AllowSSH"
     priority                   = 110
