@@ -141,7 +141,7 @@ resource "azurerm_lb_rule" "http" {
   loadbalancer_id                = azurerm_lb.main.id
   protocol                       = "Tcp"
   frontend_port                  = 80
-  backend_port                   = 80
+  backend_port                   = 8080
   frontend_ip_configuration_name = "PublicIPAddress"
   backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pool.id]
   probe_id                       = azurerm_lb_probe.http.id
