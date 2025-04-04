@@ -23,6 +23,8 @@
         state: present
         update_cache: yes
 
+
+
     - name: Clone project repo
       git:
         repo: "{{ repo_url }}"
@@ -40,23 +42,36 @@
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
     
-    # - name: 🔪 Stop any running Flask apps (on port 80)
+    - name: Copy systemd service file for Flask
+      template:
+        src: flask.service.j2
+        dest: /etc/systemd/system/flask.service
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Flask app service
+      systemd:
+        name: flask
+        state: restarted
+        enabled: yes
+
+    - name: 🔍 Show Flask service status
+      shell: systemctl status flask --no-pager
+      register: flask_status
+      changed_when: false
+
+    - name: 🔍 Print Flask service status
+      debug:
+        var: flask_status.stdout_lines
+
+    # - name: Start Flask app (simple background)
     #   shell: |
-    #     pids=$(lsof -t -i:80 -sTCP:LISTEN || true)
-    #     if [ -n "$pids" ]; then
-    #       echo "Killing old Flask processes: $pids"
-    #       kill -9 $pids
-    #     else
-    #       echo "No Flask app running on port 80"
-    #     fi
+    #     nohup {{ venv_dir }}/bin/python {{ project_dir }}/app/main.py > /var/log/flask.log 2>&1 &
     #   args:
     #     executable: /bin/bash
-
-    - name: Start Flask app (simple background)
-      shell: |
-        nohup {{ venv_dir }}/bin/python {{ project_dir }}/app/main.py > /var/log/flask.log 2>&1 &
-      args:
-        executable: /bin/bash
 
     - name: 🔍 DEBUG - Show running Python processes
       shell: pgrep -fl python

@@ -1,0 +1,13 @@
+[Unit]
+Description=Flask App
+After=network.target
+
+[Service]
+User=azureuser
+WorkingDirectory={{ project_dir }}
+Environment="PATH={{ venv_dir }}/bin"
+ExecStart={{ venv_dir }}/bin/python {{ project_dir }}/app/main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
