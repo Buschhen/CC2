@@ -45,6 +45,9 @@ jobs:
       TF_VAR_subscription_id: ${{ secrets.TF_VAR_subscription_id }}
       TF_VAR_tenant_id: ${{ secrets.TF_VAR_tenant_id }}
       TF_VAR_ssh_public_key: ${{ secrets.TF_VAR_ssh_public_key }}
+      TF_VAR_sql_password: ${{ secrets.TF_VAR_sql_password }}
+      TF_VAR_admin_username: ${{ var.TF_VAR_admin_username}}
+      TF_VAR_sql_admin: ${{ var.TF_VAR_sql_admin}}
 
     outputs:
       bastion_ip: ${{ steps.output.outputs.bastion_ip }}
