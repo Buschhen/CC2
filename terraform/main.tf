@@ -301,3 +301,55 @@ resource "azurerm_network_interface" "bastion_nic" {
     public_ip_address_id          = azurerm_public_ip.bastion_public_ip.id
   }
 }
+
+
+##############
+
+resource "azurerm_storage_account" "docs" {
+  name                     = "docstorage${random_id.rand.hex}"
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  public_network_access_enabled = false # ❗ wichtig
+
+  network_rules {
+    default_action             = "Deny"
+    virtual_network_subnet_ids = [azurerm_subnet.main.id]
+    bypass                     = ["AzureServices"]
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_storage_container" "pdfs" {
+  name                  = "documents"
+  storage_account_id  = azurerm_storage_account.docs.id
+  container_access_type = "private"
+}
+
+resource "azurerm_mssql_server" "main" {
+  name                         = "sqlserver-${random_id.rand.hex}"
+  resource_group_name          = azurerm_resource_group.main.name
+  location                     = var.location
+  version                      = "12.0"
+  administrator_login          = var.sql_admin
+  administrator_login_password = var.sql_password
+  public_network_access_enabled = false # ❗ kein öffentlicher Zugriff
+
+  minimum_tls_version = "1.2"
+}
+
+resource "azurerm_mssql_database" "documents" {
+  name       = "documentsdb"
+  server_id  = azurerm_mssql_server.main.id
+  sku_name   = "Basic"
+  max_size_gb = 2
+  zone_redundant = false
+}
+
+resource "random_id" "rand" {
+  byte_length = 2
+}

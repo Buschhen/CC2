@@ -44,3 +44,14 @@ variable "ssh_public_key" {
   description = "SSH public key for VMs"
   type        = string
 }
+
+
+variable "sql_admin" {
+  description = "SQL Database login name"
+  type        = string
+}
+variable "sql_password" {
+  description = "SQL Database password"
+  type        = string
+  sensitive   = true
+}

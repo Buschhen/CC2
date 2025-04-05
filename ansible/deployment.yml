@@ -67,12 +67,6 @@
       debug:
         var: flask_status.stdout_lines
 
-    # - name: Start Flask app (simple background)
-    #   shell: |
-    #     nohup {{ venv_dir }}/bin/python {{ project_dir }}/app/main.py > /var/log/flask.log 2>&1 &
-    #   args:
-    #     executable: /bin/bash
-
     - name: 🔍 DEBUG - Show running Python processes
       shell: pgrep -fl python
       register: python_procs
@@ -112,3 +106,6 @@
     - name: 🧾 Print Flask logs
       debug:
         var: flask_logs.stdout_lines
+
+
+####################
