@@ -47,6 +47,7 @@ jobs:
       TF_VAR_ssh_public_key: ${{ secrets.TF_VAR_ssh_public_key }}
       TF_VAR_sql_password: ${{ secrets.TF_VAR_sql_password }}
 
+
       TF_VAR_admin_username: ${{ vars.TF_VAR_admin_username}}
       TF_VAR_sql_admin: ${{ vars.TF_VAR_sql_admin}}
       TF_VAR_location: ${{ vars.TF_VAR_location}}
