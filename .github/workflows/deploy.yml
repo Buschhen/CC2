@@ -181,8 +181,8 @@ jobs:
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
 
             mv inventory.ini ./repo/ansible/
-            cd repo/ansible
             mv secrets.json ./repo/ansible/
+            cd repo/ansible
 
             ls -la
 
