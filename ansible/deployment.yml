@@ -11,9 +11,28 @@
   tasks:
     - name: Install required apt packages
       apt:
-        name: [git, python3-pip, python3-venv, tree]
+        name:
+          - git
+          - python3-pip
+          - python3-venv
+          - tree
+          - unixodbc
+          - unixodbc-dev
+          - libodbc1
         state: present
         update_cache: yes
+        
+    - name: Install Microsoft ODBC Driver 17 for SQL Server
+      become: true
+      shell: |
+        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+        curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+        apt-get update
+        ACCEPT_EULA=Y apt-get install -y msodbcsql17
+      args:
+        executable: /bin/bash
+
+
 
     # - name: Generate hierarchical directory visualization
     #   command: tree ./
