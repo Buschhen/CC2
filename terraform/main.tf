@@ -366,10 +366,6 @@ AZURE_BLOB_CONNECTION_STRING="%s"
 STORAGE_CONTAINER_NAME="%s"
 EOT
     ,
-    azurerm_mssql_server.main.administrator_login,
-    var.sql_password,
-    azurerm_mssql_server.main.fully_qualified_domain_name,
-    azurerm_mssql_database.documents.name,
     azurerm_storage_account.docs.primary_connection_string,
     azurerm_storage_container.pdfs.name
   )
