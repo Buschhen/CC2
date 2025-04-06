@@ -17,6 +17,11 @@
       debug:
         msg: "Running on host: {{ hostname_output.stdout }}"
 
+    - name: Verify .env exists
+      run: |
+        echo "Current dir: $(pwd)"
+        ls -alh
+        tree
     - name: Import concealed parameters from JSON artifact
       set_fact:
         credentials: "{{ lookup('file', '../secrets.json') | from_json }}"
@@ -48,10 +53,10 @@
         virtualenv: "{{ venv_dir }}"
 
 
-    - name: Download .env artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: env
+    # - name: Download .env artifact
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: env
 
     # - name: Upload .env file
     #   copy:
@@ -61,13 +66,13 @@
     #     group: azureuser
     #     mode: "0600"
 
-    - name: Upload .env file to Flask app directory
-      copy:
-        src: "./.env"
-        dest: "{{ project_dir }}/app/.env"
-        owner: azureuser
-        group: azureuser
-        mode: '0600'
+    # - name: Upload .env file to Flask app directory
+    #   copy:
+    #     src: "./.env"
+    #     dest: "{{ project_dir }}/app/.env"
+    #     owner: azureuser
+    #     group: azureuser
+    #     mode: '0600'
 
 
     
