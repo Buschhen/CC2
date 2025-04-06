@@ -31,12 +31,12 @@ def upload():
             try:
                 # Upload the PDF file
                 pdf_blob = container_client.get_blob_client(uploaded_file.filename)
-                pdf_blob.upload_blob(uploaded_file.stream, overwrite=True)
-
+                pdf_data = uploaded_file.read()  # Read once into memory
+                pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
                 # Upload the note as a .txt file
-                note_blob_name = uploaded_file.filename + ".note.txt"
-                note_blob = container_client.get_blob_client(note_blob_name)
-                note_blob.upload_blob(note, overwrite=True)
+                # note_blob_name = uploaded_file.filename + ".note.txt"
+                # note_blob = container_client.get_blob_client(note_blob_name)
+                # note_blob.upload_blob(note, overwrite=True)
                 # Summarize the PDF with GPT
                 summary = summarize_pdf(uploaded_file.read())
 
