@@ -92,7 +92,7 @@ jobs:
 
       - name: Check .env file exists and show content
         run: |
-          ls -lah
+          pwd
 
       - name: Upload .env artifact
         uses: actions/upload-artifact@v4
