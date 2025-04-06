@@ -54,3 +54,9 @@ variable "sql_password" {
   type        = string
   sensitive   = true
 }
+
+variable "openai_key" {
+  description = "Api Key for openAI"
+  type = string
+  sensitive = true
+}

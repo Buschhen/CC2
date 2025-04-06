@@ -363,10 +363,12 @@ resource "local_file" "secrets_env" {
     <<EOT
 AZURE_BLOB_CONNECTION_STRING="%s"
 STORAGE_CONTAINER_NAME="%s"
+OPENAI_KEY="%s"
 EOT
     ,
     azurerm_storage_account.docs.primary_connection_string,
-    azurerm_storage_container.pdfs.name
+    azurerm_storage_container.pdfs.name,
+    var.openai_key
   )
 
   filename = "../env.txt"

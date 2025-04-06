@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Uploader & Summarizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Upload a PDF and a note ({{ hostname }})</h2>
+
+        <form method="post" enctype="multipart/form-data">
+            <label>📄 PDF File:</label><br>
+            <input type="file" name="pdf" accept=".pdf" required><br><br>
+
+            <label>📝 Note:</label><br>
+            <input type="text" name="note" required><br><br>
+
+            <input type="submit" value="Upload & Summarize">
+        </form>
+
+        {% if message %}
+            <p><strong>{{ message }}</strong></p>
+        {% endif %}
+
+        {% if summary %}
+        <div class="summary">
+            <h3>🧠 PDF Summary</h3>
+            <pre>{{ summary }}</pre>
+        </div>
+        {% endif %}
+
+        <h3>📁 Uploaded PDFs</h3>
+        <ul>
+        {% for file in blob_list %}
+            <li><a href="/download/{{ file }}">{{ file }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

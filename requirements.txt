@@ -1,4 +1,6 @@
-flask
+Flask
+openai
+pymupdf
+tiktoken
 python-dotenv
 azure-storage-blob
-sqlalchemy

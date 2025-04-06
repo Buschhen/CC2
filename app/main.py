@@ -1,9 +1,10 @@
-from flask import Flask, request, render_template_string, send_file
+from flask import Flask, request, render_template, send_file
 import socket
 import os
 from azure.storage.blob import BlobServiceClient
 from io import BytesIO
 from dotenv import load_dotenv
+from pdf_summarizer import summarize_pdf
 
 # === Load environment variables from .env ===
 load_dotenv()
@@ -36,6 +37,8 @@ def upload():
                 note_blob_name = uploaded_file.filename + ".note.txt"
                 note_blob = container_client.get_blob_client(note_blob_name)
                 note_blob.upload_blob(note, overwrite=True)
+                # Summarize the PDF with GPT
+                summary = summarize_pdf(uploaded_file.read())
 
                 message = f"✅ Uploaded PDF and note: {uploaded_file.filename}"
 
@@ -49,24 +52,14 @@ def upload():
     blobs = container_client.list_blobs()
     blob_list = [blob.name for blob in blobs if not blob.name.endswith(".note.txt")]
 
-    return render_template_string("""
-        <h2>Upload a PDF and a note ({{ hostname }})</h2>
-        <form method="post" enctype="multipart/form-data">
-            <label>PDF File:</label><br>
-            <input type="file" name="pdf" required><br><br>
-            <label>Note:</label><br>
-            <input type="text" name="note" required><br><br>
-            <input type="submit" value="Upload">
-        </form>
-        <p>{{ message }}</p>
+    return render_template(
+        "index.html",
+        hostname=hostname,
+        message=message,
+        blob_list=blob_list,
+        summary=summary if 'summary' in locals() else None
+    )
 
-        <h3>📁 Uploaded PDFs</h3>
-        <ul>
-        {% for file in blob_list %}
-            <li><a href="/download/{{ file }}">{{ file }}</a></li>
-        {% endfor %}
-        </ul>
-    """, hostname=hostname, message=message, blob_list=blob_list)
 
 @app.route('/download/<filename>')
 def download_file(filename):
