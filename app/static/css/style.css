@@ -79,7 +79,7 @@ ul li a:hover {
 .pdf-card {
     border: 2px solid #ccc;
     border-radius: 8px;
-    padding: 15px;
+    padding: 15px 20px;
     margin-bottom: 20px;
     background-color: #fefefe;
 }
@@ -90,11 +90,51 @@ ul li a:hover {
 
 .pdf-summary-snippet {
     margin-top: 10px;
-    font-style: italic;
+    font-style: normal;
     color: #333;
 }
 
 .no-summary {
     color: #900;
     font-weight: bold;
+}
+
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pdf-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #0066cc;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.snippet {
+    font-style: italic;
+}
+
+.toggle-summary {
+    font-size: 0.9em;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.toggle-summary:hover {
+    text-decoration: underline;
 }

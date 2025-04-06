@@ -28,24 +28,53 @@
 
     <h3>📁 Uploaded PDFs</h3>
     <div>
-        {% for file in pdfs %}
-          <div class="pdf-card">
-            <a href="/download/{{ file.filename }}">{{ file.filename }}</a>
-            <form action="/delete/{{ file.filename }}" method="post" style="display:inline;">
-              <button type="submit" onclick="return confirm('Delete this PDF?')">🗑️ Delete</button>
-            </form>
-      
-            <div class="pdf-summary-snippet">
-              <strong>📄 Summary:</strong><br>
-              {% if file.summary and file.summary != "❌ No summary available" %}
-                {{ file.summary.split()[:5] | join(" ") }}...
-              {% else %}
-                <span class="no-summary">❌ No summary available</span>
-              {% endif %}
+      {% for file in pdfs %}
+        <div class="pdf-card">
+          <div class="card-header">
+            <div class="pdf-title">
+              📄 <a href="/download/{{ file.filename }}">{{ file.filename }}</a>
             </div>
+            <form action="/delete/{{ file.filename }}" method="post">
+              <button class="delete-btn" type="submit" onclick="return confirm('Delete this PDF?')">🗑️ Delete</button>
+            </form>
           </div>
-        {% endfor %}
-    </div>      
+    
+          <div class="pdf-summary-snippet">
+            <strong>🧾 Summary:</strong><br>
+            {% if file.summary and file.summary != "❌ No summary available" %}
+              <span class="snippet">
+                {{ file.summary.split()[:5] | join(" ") }}...
+              </span>
+              <span class="full-summary" style="display:none;">
+                {{ file.summary }}
+              </span>
+              <br>
+              <a href="javascript:void(0);" class="toggle-summary">Show more</a>
+            {% else %}
+              <span class="no-summary">❌ No summary available</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>        
   </div>
+  <script>
+    document.querySelectorAll(".toggle-summary").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const snippet = btn.previousElementSibling.previousElementSibling;
+        const full = btn.previousElementSibling;
+  
+        if (full.style.display === "none") {
+          snippet.style.display = "none";
+          full.style.display = "inline";
+          btn.textContent = "Show less";
+        } else {
+          snippet.style.display = "inline";
+          full.style.display = "none";
+          btn.textContent = "Show more";
+        }
+      });
+    });
+  </script>  
 </body>
 </html>
