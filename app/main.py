@@ -31,50 +31,58 @@ def upload():
 
         if uploaded_file.filename.endswith(".pdf"):
             try:
-                # Read file once into memory
+                # Read file once
                 pdf_data = uploaded_file.read()
+                file_size = len(pdf_data)
 
-                # Upload PDF
+                # Upload original file (standard name)
                 pdf_blob = container_client.get_blob_client(uploaded_file.filename)
                 pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
 
-                # Summarize
-                summary = summarize_pdf(pdf_data)
+                # ✅ Build summary key
+                summary_key = f"{uploaded_file.filename}.{file_size}.summary.txt"
+                summary_blob = container_client.get_blob_client(summary_key)
 
-                # Upload summary
-                summary_blob = container_client.get_blob_client(uploaded_file.filename + ".summary.txt")
-                summary_blob.upload_blob(summary, overwrite=True)
-
-                session["message"] = f"✅ Uploaded PDF and summary: {uploaded_file.filename}"
-                session["summary"] = summary
+                # Check if summary already exists
+                if summary_blob.exists():
+                    session["summary"] = summary_blob.download_blob().readall().decode("utf-8")
+                    session["message"] = f"✅ Reused cached summary for: {uploaded_file.filename}"
+                else:
+                    summary = summarize_pdf(pdf_data)
+                    summary_blob.upload_blob(summary, overwrite=True)
+                    session["message"] = f"✅ Uploaded and summarized: {uploaded_file.filename}"
 
             except Exception as e:
                 session["message"] = f"❌ Upload failed: {e}"
         else:
             session["message"] = "❗ Please upload a valid PDF file."
 
+
         return redirect(url_for("upload"))  # 🔁 Prevent form re-submission
 
     # Prepare list of PDFs with summaries
     blobs = list(container_client.list_blobs())
+    # After listing all blobs
     pdfs = []
 
     for blob in blobs:
         if blob.name.endswith(".pdf"):
-            summary_blob_name = blob.name + ".summary.txt"
+            matching_summaries = [
+                b.name for b in blobs
+                if b.name.startswith(blob.name + ".") and b.name.endswith(".summary.txt")
+            ]
             summary_text = "❌ No summary available"
 
-            try:
-                summary_blob = container_client.get_blob_client(summary_blob_name)
-                if summary_blob.exists():
-                    summary_text = summary_blob.download_blob().readall().decode("utf-8")
-            except:
-                pass
+            if matching_summaries:
+                # Use the first one (or latest)
+                summary_blob = container_client.get_blob_client(matching_summaries[0])
+                summary_text = summary_blob.download_blob().readall().decode("utf-8")
 
             pdfs.append({
                 "filename": blob.name,
                 "summary": summary_text
             })
+
 
     return render_template(
         "index.html",
