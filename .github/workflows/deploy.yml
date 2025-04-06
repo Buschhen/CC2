@@ -166,8 +166,7 @@ jobs:
 
           echo "${SSH_KEY}" > id_rsa
           chmod 600 id_rsa
-
-          mv secrets/secrets.json ./
+          
           tree
 
           scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
