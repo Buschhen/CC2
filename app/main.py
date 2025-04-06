@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, render_template_string, send_file
 import socket
-import pyodbc
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 import os
 from azure.storage.blob import BlobServiceClient
 from io import BytesIO
@@ -18,8 +19,9 @@ BLOB_CONTAINER_NAME = os.getenv("STORAGE_CONTAINER_NAME", "documents")
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 container_client = blob_service_client.get_container_client(BLOB_CONTAINER_NAME)
 
-# === Azure SQLAlchemy connection string from .env ===
+# === Azure SQLAlchemy connection string ===
 sqlalchemy_conn_str = os.getenv("SQLALCHEMY_CONNECTION_STRING")
+engine = create_engine(sqlalchemy_conn_str, pool_pre_ping=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def upload():
@@ -36,26 +38,25 @@ def upload():
                 blob_client = container_client.get_blob_client(uploaded_file.filename)
                 blob_client.upload_blob(uploaded_file.stream, overwrite=True)
 
-                # Save metadata to SQL
-                conn = pyodbc.connect(sqlalchemy_conn_str)
-                cursor = conn.cursor()
-                cursor.execute("""
-                    IF NOT EXISTS (
-                        SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'documents'
-                    )
-                    CREATE TABLE documents (
-                        id INT IDENTITY PRIMARY KEY,
-                        filename NVARCHAR(255),
-                        note NVARCHAR(MAX)
-                    )
-                """)
-                conn.commit()
+                # Save metadata to Azure SQL using SQLAlchemy
+                with engine.begin() as conn:
+                    # Create table if not exists
+                    conn.execute(text("""
+                        IF NOT EXISTS (
+                            SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'documents'
+                        )
+                        CREATE TABLE documents (
+                            id INT IDENTITY PRIMARY KEY,
+                            filename NVARCHAR(255),
+                            note NVARCHAR(MAX)
+                        )
+                    """))
 
-                cursor.execute(
-                    "INSERT INTO documents (filename, note) VALUES (?, ?)",
-                    uploaded_file.filename, note
-                )
-                conn.commit()
+                    # Insert document metadata
+                    conn.execute(
+                        text("INSERT INTO documents (filename, note) VALUES (:filename, :note)"),
+                        {"filename": uploaded_file.filename, "note": note}
+                    )
 
                 message = f"✅ Uploaded to Blob and saved to DB: {uploaded_file.filename}"
 

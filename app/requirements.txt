@@ -1,4 +1,4 @@
 flask
-pyodbc
-azure-storage-blob
 python-dotenv
+azure-storage-blob
+sqlalchemy
