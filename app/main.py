@@ -25,21 +25,20 @@ def upload():
 
     if request.method == 'POST':
         uploaded_file = request.files['pdf']
-        note = request.form['note']
 
+        pdf_data = uploaded_file.read()
         if uploaded_file.filename.endswith('.pdf'):
             try:
                 # Upload the PDF file
                 pdf_blob = container_client.get_blob_client(uploaded_file.filename)
-                pdf_data = uploaded_file.read()  # Read once into memory
                 pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
+                summary = summarize_pdf(pdf_data)
+
                 # Upload the note as a .txt file
                 # note_blob_name = uploaded_file.filename + ".note.txt"
                 # note_blob = container_client.get_blob_client(note_blob_name)
                 # note_blob.upload_blob(note, overwrite=True)
                 # Summarize the PDF with GPT
-                summary = summarize_pdf(uploaded_file.read())
-
                 message = f"✅ Uploaded PDF and note: {uploaded_file.filename}"
 
             except Exception as e:
@@ -69,6 +68,24 @@ def download_file(filename):
         return send_file(BytesIO(stream), download_name=filename, as_attachment=True)
     except Exception as e:
         return f"Error downloading file: {e}", 500
+    
+@app.route('/delete/<filename>', methods=['POST'])
+def delete_file(filename):
+    try:
+        # Delete PDF
+        blob_client = container_client.get_blob_client(filename)
+        blob_client.delete_blob()
+
+        # Also delete the associated note, if it exists
+        note_blob_name = filename + ".note.txt"
+        note_blob = container_client.get_blob_client(note_blob_name)
+        if note_blob.exists():
+            note_blob.delete_blob()
+
+        return "Deleted", 204
+    except Exception as e:
+        return f"Error deleting file: {e}", 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
