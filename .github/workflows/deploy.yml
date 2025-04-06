@@ -96,13 +96,11 @@ jobs:
           echo "Current dir: $(pwd)"
           ls -alh $GITHUB_WORKSPACE/env_output
 
-
-
       - name: Upload .env artifact
         uses: actions/upload-artifact@v4
         with:
           name: env
-          path: ${{ github.workspace }}/env_output/.env
+          path: ${{ github.workspace }}/env_output/
 
 
 
