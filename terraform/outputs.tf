@@ -39,21 +39,56 @@ output "app_vm_ips" {
   ])
 }
 
-output "sql_env_vars" {
-  value = <<EOT
-SQL_SERVER=${azurerm_mssql_server.main.name}.database.windows.net
-SQL_DATABASE=${azurerm_mssql_database.documents.name}
-SQL_USERNAME=${var.sql_admin}
-SQL_PASSWORD=${var.sql_password}
-EOT
+# output "sql_env_vars" {
+#   value = <<EOT
+# # SQL_SERVER=${azurerm_mssql_server.main.name}.database.windows.net
+# # SQL_DATABASE=${azurerm_mssql_database.documents.name}
+# # SQL_USERNAME=${var.sql_admin}
+# # SQL_PASSWORD=${var.sql_password}
+# EOT
 
+#   sensitive = true
+# }
+
+# output "blob_env_vars" {
+#   value = <<EOT
+# AZURE_CONNECTION_STRING=${azurerm_storage_account.docs.primary_connection_string}
+# BLOB_CONTAINER_NAME=documents
+# EOT
+#   sensitive = true
+# }
+
+output "sql_server_name" {
+  value = azurerm_mssql_server.main.name
+}
+
+output "sql_server_fqdn" {
+  value = azurerm_mssql_server.main.fully_qualified_domain_name
+}
+
+output "sql_database_name" {
+  value = azurerm_mssql_database.documents.name
+}
+
+output "sql_admin_login" {
+  value = azurerm_mssql_server.main.administrator_login
+}
+
+output "sql_admin_password" {
+  value     = var.sql_password
   sensitive = true
 }
 
-output "blob_env_vars" {
-  value = <<EOT
-AZURE_CONNECTION_STRING=${azurerm_storage_account.docs.primary_connection_string}
-BLOB_CONTAINER_NAME=documents
-EOT
+output "sqlalchemy_connection_string" {
+  value = "mssql+pyodbc://${azurerm_mssql_server.main.administrator_login}:${var.sql_password}@${azurerm_mssql_server.main.fully_qualified_domain_name}/${azurerm_mssql_database.documents.name}?driver=ODBC+Driver+17+for+SQL+Server"
   sensitive = true
+}
+
+output "azure_blob_connection_string" {
+  value     = azurerm_storage_account.docs.primary_connection_string
+  sensitive = true
+}
+
+output "storage_container_name" {
+  value = azurerm_storage_container.pdfs.name
 }

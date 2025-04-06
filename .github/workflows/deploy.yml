@@ -83,6 +83,10 @@ jobs:
         run: |
           echo "bastion_ip=$(cd $TF_DIR && terraform output -raw bastion_ip)" >> $GITHUB_OUTPUT
           echo "app_vm_ips=$(cd $TF_DIR && terraform output -json app_vm_ips)" >> $GITHUB_OUTPUT
+          # echo "sqlalchemy_connection_string=$(cd $TF_DIR && terraform output -raw sqlalchemy_connection_string)" >> $GITHUB_OUTPUT"
+          # echo "azure_blob_connection_string=$(cd $TF_DIR && terraform output -raw azure_blob_connection_string)" >> $GITHUB_OUTPUT"
+          # echo "storage_container_name=$(cd $TF_DIR && terraform output -raw storage_container_name)" >> $GITHUB_OUTPUT"
+
 
       - name: Generate .env from Terraform outputs
         run: |

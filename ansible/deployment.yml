@@ -17,13 +17,18 @@
       debug:
         msg: "Running on host: {{ hostname_output.stdout }}"
 
+    - name: Import concealed parameters from JSON artifact
+      set_fact:
+        credentials: "{{ lookup('file', '../secrets.json') | from_json }}"
+    - name: Exhibit extracted secure elements (illustrative)
+      debug:
+        msg: "storage_container_name: {{ credentials.storage_container_name }}"
+
     - name: Install required apt packages
       apt:
         name: [git, python3-pip, python3-venv]
         state: present
         update_cache: yes
-
-
 
     - name: Clone project repo
       git:

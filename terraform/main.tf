@@ -356,3 +356,13 @@ resource "azurerm_mssql_database" "documents" {
 resource "random_id" "rand" {
   byte_length = 2
 }
+
+
+resource "local_file" "secrets_file" {
+  content  = jsonencode({
+    sqlalchemy_connection_string = "mssql+pyodbc://${azurerm_mssql_server.main.administrator_login}:${var.sql_password}@${azurerm_mssql_server.main.fully_qualified_domain_name}/${azurerm_mssql_database.documents.name}?driver=ODBC+Driver+17+for+SQL+Server",
+    azure_blob_connection_string = azurerm_storage_account.docs.primary_connection_string,
+    storage_container_name  = azurerm_storage_container.pdfs.name
+  })
+  filename = "${path.module}/../secrets.json"
+}

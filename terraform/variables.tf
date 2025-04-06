@@ -45,7 +45,6 @@ variable "ssh_public_key" {
   type        = string
 }
 
-
 variable "sql_admin" {
   description = "SQL Database login name"
   type        = string
