@@ -87,6 +87,16 @@ jobs:
           # echo "azure_blob_connection_string=$(cd $TF_DIR && terraform output -raw azure_blob_connection_string)" >> $GITHUB_OUTPUT"
           # echo "storage_container_name=$(cd $TF_DIR && terraform output -raw storage_container_name)" >> $GITHUB_OUTPUT"
 
+      - name: Verify secrets exists
+        run: |
+          echo "Current dir: $(pwd)"
+          ls -alh ../
+
+      - name: Upload secrets.json as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: secrets
+          path: ../secrets.json
 
       # - name: Generate .env from Terraform outputs
       #   run: |

@@ -359,10 +359,17 @@ resource "random_id" "rand" {
 
 
 resource "local_file" "secrets_file" {
-  content  = jsonencode({
-    sqlalchemy_connection_string = "mssql+pyodbc://${azurerm_mssql_server.main.administrator_login}:${var.sql_password}@${azurerm_mssql_server.main.fully_qualified_domain_name}/${azurerm_mssql_database.documents.name}?driver=ODBC+Driver+17+for+SQL+Server",
+  content = jsonencode({
+    sqlalchemy_connection_string = format(
+      "mssql+pyodbc://%s:%s@%s/%s?driver=ODBC+Driver+17+for+SQL+Server",
+      azurerm_mssql_server.main.administrator_login,
+      var.sql_password,
+      azurerm_mssql_server.main.fully_qualified_domain_name,
+      azurerm_mssql_database.documents.name
+    ),
     azure_blob_connection_string = azurerm_storage_account.docs.primary_connection_string,
-    storage_container_name  = azurerm_storage_container.pdfs.name
+    storage_container_name        = azurerm_storage_container.pdfs.name
   })
-  filename = "${path.module}/../secrets.json"
+
+  filename = "../secrets.json"
 }
