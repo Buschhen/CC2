@@ -68,14 +68,24 @@
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
 
+
+    - name: Generate hierarchical directory visualization
+      command: tree ./
+      register: tree_structure
+      ignore_errors: true
+
+    - name: Present directory structure for diagnostic examination
+      debug:
+        var: tree_structure.stdout
+        
     - name: Copy secrets.json to VM
       copy:
         src: secrets/secrets.json
-        dest: /home/azureuser/repo/app/secrets.json
+        dest: "{{ project_dir }}/app/secrets.json"
         owner: azureuser
         group: azureuser
         mode: "0600"
-        
+
     - name: Copy systemd service file for Flask
       template:
         src: flask.service.j2
