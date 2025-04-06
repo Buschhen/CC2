@@ -86,11 +86,10 @@ jobs:
 
       - name: Generate .env from Terraform outputs
         run: |
-
+          mkdir -p env_output
           cd $TF_DIR
-          mkdir ../envtest
-          terraform output -raw sql_env_vars > ../envtest/.env
-          terraform output -raw blob_env_vars >> ../envtest/.env
+          terraform output -raw sql_env_vars > ../env_output/.env
+          terraform output -raw blob_env_vars >> ../env_output/.env
           cd ..
           ls
 
@@ -102,7 +101,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: env
-          path: envtest
+          path: env_output/.env
+
 
 
 
