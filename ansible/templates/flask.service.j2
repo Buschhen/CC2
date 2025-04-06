@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 User=azureuser
+EnvironmentFile=/repo/app/.env
 ExecStart=/repo/venv/bin/python /repo/app/main.py
 Restart=always
 

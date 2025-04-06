@@ -6,29 +6,20 @@ from azure.storage.blob import BlobServiceClient
 from io import BytesIO
 from dotenv import load_dotenv
 
-# === Load environment variables ===
+# === Load environment variables from .env ===
 load_dotenv()
 
 app = Flask(__name__)
 
 # === Azure Blob Config ===
-AZURE_CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
-BLOB_CONTAINER_NAME = os.getenv("BLOB_CONTAINER_NAME", "documents")
+AZURE_CONNECTION_STRING = os.getenv("AZURE_BLOB_CONNECTION_STRING")
+BLOB_CONTAINER_NAME = os.getenv("STORAGE_CONTAINER_NAME", "documents")
 
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 container_client = blob_service_client.get_container_client(BLOB_CONTAINER_NAME)
 
-# === Azure SQL Config ===
-SQL_SERVER = os.getenv("SQL_SERVER")
-SQL_DATABASE = os.getenv("SQL_DATABASE")
-SQL_USERNAME = os.getenv("SQL_USERNAME")
-SQL_PASSWORD = os.getenv("SQL_PASSWORD")
-
-conn_str = (
-    f'DRIVER={{ODBC Driver 17 for SQL Server}};'
-    f'SERVER={SQL_SERVER};DATABASE={SQL_DATABASE};UID={SQL_USERNAME};'
-    f'PWD={SQL_PASSWORD};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
-)
+# === Azure SQLAlchemy connection string from .env ===
+sqlalchemy_conn_str = os.getenv("SQLALCHEMY_CONNECTION_STRING")
 
 @app.route('/', methods=['GET', 'POST'])
 def upload():
@@ -46,7 +37,7 @@ def upload():
                 blob_client.upload_blob(uploaded_file.stream, overwrite=True)
 
                 # Save metadata to SQL
-                conn = pyodbc.connect(conn_str)
+                conn = pyodbc.connect(sqlalchemy_conn_str)
                 cursor = conn.cursor()
                 cursor.execute("""
                     IF NOT EXISTS (
