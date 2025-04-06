@@ -139,7 +139,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: secrets
-          path: ./ansible/secrets
+          path: ./
 
       - name: debug:show files before Ansible runs
         run: |
@@ -166,10 +166,13 @@ jobs:
 
           echo "${SSH_KEY}" > id_rsa
           chmod 600 id_rsa
+
+          mv secrets/secrets.json ./
           tree
+
           scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
           scp -o StrictHostKeyChecking=no -i id_rsa id_rsa azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -i id_rsa ./ansible/secrets/secrets.json azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
+          scp -o StrictHostKeyChecking=no -i id_rsa secrets.json azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
 
 
           # Escape properly and SSH to bastion
@@ -181,7 +184,7 @@ jobs:
             mv inventory.ini ./repo/ansible/
             cd repo/ansible
 
-            tree
+            ls -la
             mv secrets.json ./repo/ansible/
 
             echo -e "[defaults]\nhost_key_checking = False" > ansible.cfg
