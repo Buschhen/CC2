@@ -90,6 +90,10 @@ jobs:
           terraform output -raw sql_env_vars > ../.env
           terraform output -raw blob_env_vars >> ../.env
 
+      - name: Check .env file exists and show content
+        run: |
+          ls -lah
+
       - name: Upload .env artifact
         uses: actions/upload-artifact@v4
         with:
