@@ -1,15 +1,16 @@
-import openai
 import fitz  # PyMuPDF
 import tiktoken
-from dotenv import load_dotenv
+from openai import OpenAI
 import os
+from dotenv import load_dotenv
+
+# Load API key from .env
 load_dotenv()
-
-
 OPENAI_KEY = os.getenv("OPENAI_KEY")
-openai.api_key = OPENAI_KEY
 
-MAX_TOKENS = 3000  # limit per GPT call
+client = OpenAI(api_key=OPENAI_KEY)
+
+MAX_TOKENS_PER_CHUNK = 3000  # Adjust based on your model context
 
 def extract_text_from_pdf(file_bytes):
     doc = fitz.open(stream=file_bytes, filetype="pdf")
@@ -19,7 +20,7 @@ def estimate_tokens(text):
     enc = tiktoken.encoding_for_model("gpt-4")
     return len(enc.encode(text))
 
-def chunk_text(text, max_tokens=MAX_TOKENS):
+def chunk_text(text, max_tokens=MAX_TOKENS_PER_CHUNK):
     paragraphs = text.split('\n\n')
     chunks, current = [], ""
 
@@ -29,12 +30,13 @@ def chunk_text(text, max_tokens=MAX_TOKENS):
             current = para
         else:
             current += "\n\n" + para
+
     if current.strip():
         chunks.append(current.strip())
     return chunks
 
 def summarize_chunk(text):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "Summarize the following text clearly and concisely."},
