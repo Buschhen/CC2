@@ -75,3 +75,26 @@ ul li a {
 ul li a:hover {
     text-decoration: underline;
 }
+
+.pdf-card {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #fefefe;
+}
+
+.pdf-card:hover {
+    background-color: #f9f9ff;
+}
+
+.pdf-summary-snippet {
+    margin-top: 10px;
+    font-style: italic;
+    color: #333;
+}
+
+.no-summary {
+    color: #900;
+    font-weight: bold;
+}
