@@ -26,19 +26,27 @@ def upload():
     if request.method == 'POST':
         uploaded_file = request.files['pdf']
 
-        pdf_data = uploaded_file.read()
         if uploaded_file.filename.endswith('.pdf'):
             try:
-                # Upload the PDF file
-                pdf_blob = container_client.get_blob_client(uploaded_file.filename)
-                pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
+                pdf_data = uploaded_file.read()
                 summary = summarize_pdf(pdf_data)
 
-                # Upload the note as a .txt file
-                # note_blob_name = uploaded_file.filename + ".note.txt"
-                # note_blob = container_client.get_blob_client(note_blob_name)
-                # note_blob.upload_blob(note, overwrite=True)
-                # Summarize the PDF with GPT
+                # Upload PDF
+                pdf_blob = container_client.get_blob_client(uploaded_file.filename)
+                pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
+
+                # Save summary as a .summary.txt blob
+                summary_blob_name = uploaded_file.filename + ".summary.txt"
+                summary_blob = container_client.get_blob_client(summary_blob_name)
+                summary_blob.upload_blob(summary, overwrite=True)
+
+
+
+
+
+                # Upload the PDF file
+                # pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
+                # summary = summarize_pdf(pdf_data)
                 message = f"✅ Uploaded PDF and note: {uploaded_file.filename}"
 
             except Exception as e:
