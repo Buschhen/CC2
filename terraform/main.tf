@@ -361,7 +361,6 @@ resource "random_id" "rand" {
 resource "local_file" "secrets_env" {
   content = format(
     <<EOT
-SQLALCHEMY_CONNECTION_STRING="mssql+pyodbc://%s:%s@%s/%s?driver=ODBC+Driver+17+for+SQL+Server"
 AZURE_BLOB_CONNECTION_STRING="%s"
 STORAGE_CONTAINER_NAME="%s"
 EOT
