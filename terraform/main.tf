@@ -16,6 +16,7 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
 
+
 }
 # Resource Group
 resource "azurerm_resource_group" "main" {
@@ -36,6 +37,8 @@ resource "azurerm_subnet" "main" {
   address_prefixes     = ["10.0.1.0/24"]
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
+
+  service_endpoints = ["Microsoft.Storage"]
 }
 
 # NSG
@@ -333,11 +336,11 @@ resource "azurerm_storage_container" "pdfs" {
 resource "azurerm_mssql_server" "main" {
   name                         = "sqlserver-${random_id.rand.hex}"
   resource_group_name          = azurerm_resource_group.main.name
-  location                     = var.location
+  location                     = "northeurope"
   version                      = "12.0"
   administrator_login          = var.sql_admin
   administrator_login_password = var.sql_password
-  public_network_access_enabled = false # ❗ kein öffentlicher Zugriff
+  public_network_access_enabled = false
 
   minimum_tls_version = "1.2"
 }
