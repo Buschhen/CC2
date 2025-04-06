@@ -135,6 +135,16 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      - name: Download secrets.json artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: secrets
+          path: ./secrets
+
+      - name: Confirm secrets.json exists
+        run: |
+          ls -alh ./secrets
+
       - name: SSH to Bastion and run Ansible
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
