@@ -96,7 +96,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: env
-          path: .env
+          path: env.txt
 
       # - name: Generate .env from Terraform outputs
       #   run: |
@@ -144,7 +144,7 @@ jobs:
       - name: debug:show files before Ansible runs
         run: |
           echo "Current directory: $(pwd)"
-          find . -type f -name ".env"
+          find . -type f -name "env.txt"
 
       - name: Confirm .env exists
         run: |
@@ -171,7 +171,7 @@ jobs:
 
           scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
           scp -o StrictHostKeyChecking=no -i id_rsa id_rsa azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -i id_rsa .env azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
+          scp -o StrictHostKeyChecking=no -i id_rsa env.txt azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
 
 
           # Escape properly and SSH to bastion
@@ -181,7 +181,7 @@ jobs:
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
 
             mv inventory.ini ./repo/ansible/
-            mv .env ./repo/ansible/
+            mv env.txt ./repo/ansible/.env
             cd repo/ansible
 
 

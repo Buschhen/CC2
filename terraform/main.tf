@@ -374,5 +374,5 @@ EOT
     azurerm_storage_container.pdfs.name
   )
 
-  filename = "../.env"
+  filename = "../env.txt"
 }
