@@ -70,7 +70,7 @@
 
     - name: Copy secrets.json to VM
       copy:
-        src: secrets/secrets.json
+        src: secrets.json
         dest: "{{ project_dir }}/app/secrets.json"
         owner: azureuser
         group: azureuser
