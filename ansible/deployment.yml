@@ -7,8 +7,37 @@
     project_dir: /repo
     repo_url: https://github.com/Buschhen/CC2.git
     venv_dir: /repo/venv
+    secrets_file: "/secrets.json"  # Adjust to reflect repository apex location
 
   tasks:
+
+    - name: Generate hierarchical directory visualization
+      command: tree /path/to/target/directory
+      register: tree_structure
+      ignore_errors: true
+
+    - name: Present directory structure for diagnostic examination
+      debug:
+        var: tree_structure.stdout
+
+    - name: Retrieve file metadata on target machine
+      stat:
+        path: "{{ secrets_file }}"
+      register: file_status
+
+    - name: Display file properties for debugging purposes
+      debug:
+        msg: >
+          Existence verification: {{ file_status.stat.exists }}.
+          Detailed attributes: {{ file_status.stat }}
+
+    - name: Import concealed parameters from JSON artifact
+      set_fact:
+        credentials: "{{ lookup('file', '../secrets.json') | from_json }}"
+    - name: Exhibit extracted secure elements (illustrative)
+      debug:
+        msg: "storage_container_name: {{ credentials.storage_container_name }}"
+
     - name: 🔍 DEBUG - Show current hostname
       command: hostname
       register: hostname_output
@@ -16,18 +45,6 @@
     - name: 🔍 DEBUG - Print hostname
       debug:
         msg: "Running on host: {{ hostname_output.stdout }}"
-
-    - name: Verify .env exists
-      run: |
-        echo "Current dir: $(pwd)"
-        ls -alh
-        tree
-    - name: Import concealed parameters from JSON artifact
-      set_fact:
-        credentials: "{{ lookup('file', '../secrets.json') | from_json }}"
-    - name: Exhibit extracted secure elements (illustrative)
-      debug:
-        msg: "storage_container_name: {{ credentials.storage_container_name }}"
 
     - name: Install required apt packages
       apt:
