@@ -87,8 +87,8 @@ jobs:
       - name: Generate .env from Terraform outputs
         run: |
           cd $TF_DIR
-          terraform output -raw sql_env_vars > /.env
-          terraform output -raw blob_env_vars >> /.env
+          terraform output -raw sql_env_vars > .env
+          terraform output -raw blob_env_vars >> .env
 
       - name: Check .env file exists
         run: |
