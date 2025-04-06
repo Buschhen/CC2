@@ -376,3 +376,17 @@ EOT
 
   filename = "../env.txt"
 }
+
+
+resource "azurerm_mssql_virtual_network_rule" "example" {
+  name      = "allow-web-subnet"
+  server_id = azurerm_mssql_server.main.id
+  subnet_id = azurerm_subnet.main.id
+}
+
+resource "azurerm_mssql_firewall_rule" "allow_all" {
+  name             = "AllowMyVM"
+  server_id        = azurerm_mssql_server.main.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "255.255.255.255"
+}
