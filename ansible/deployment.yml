@@ -10,9 +10,14 @@
     secrets_file: "/secrets.json"  # Adjust to reflect repository apex location
 
   tasks:
+    - name: Install required apt packages
+      apt:
+        name: [git, python3-pip, python3-venv, tree]
+        state: present
+        update_cache: yes
 
     - name: Generate hierarchical directory visualization
-      command: tree 
+      command: tree ./
       register: tree_structure
       ignore_errors: true
 
@@ -45,12 +50,6 @@
     - name: 🔍 DEBUG - Print hostname
       debug:
         msg: "Running on host: {{ hostname_output.stdout }}"
-
-    - name: Install required apt packages
-      apt:
-        name: [git, python3-pip, python3-venv]
-        state: present
-        update_cache: yes
 
     - name: Clone project repo
       git:
