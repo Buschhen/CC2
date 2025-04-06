@@ -42,37 +42,33 @@
           <div class="pdf-summary-snippet">
             <strong>🧾 Summary:</strong><br>
             {% if file.summary and file.summary != "❌ No summary available" %}
-              <span class="snippet">
-                {{ file.summary.split()[:5] | join(" ") }}...
-              </span>
-              <span class="full-summary" style="display:none;">
-                {{ file.summary }}
-              </span>
+              <span class="snippet">{{ file.summary.split()[:5] | join(" ") }}...</span>
+              <span class="full-summary" style="display:none;">{{ file.summary }}</span>
               <br>
               <a href="javascript:void(0);" class="toggle-summary">Show more</a>
             {% else %}
               <span class="no-summary">❌ No summary available</span>
             {% endif %}
-          </div>
+          </div>          
         </div>
       {% endfor %}
     </div>        
   </div>
   <script>
     document.querySelectorAll(".toggle-summary").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const snippet = btn.previousElementSibling.previousElementSibling;
-        const full = btn.previousElementSibling;
+      const snippet = btn.previousElementSibling.previousElementSibling;
+      const full = btn.previousElementSibling;
   
-        if (full.style.display === "none") {
-          snippet.style.display = "none";
-          full.style.display = "inline";
-          btn.textContent = "Show less";
-        } else {
-          snippet.style.display = "inline";
-          full.style.display = "none";
-          btn.textContent = "Show more";
-        }
+      // Always start with full hidden, snippet shown
+      snippet.style.display = "inline";
+      full.style.display = "none";
+      btn.textContent = "Show more";
+  
+      btn.addEventListener("click", () => {
+        const isCollapsed = full.style.display === "none";
+        snippet.style.display = isCollapsed ? "none" : "inline";
+        full.style.display = isCollapsed ? "inline" : "none";
+        btn.textContent = isCollapsed ? "Show less" : "Show more";
       });
     });
   </script>  

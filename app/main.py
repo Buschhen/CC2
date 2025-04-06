@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file, session, redirect, url_for
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 from io import BytesIO
@@ -11,6 +11,7 @@ from pdf_summarizer import summarize_pdf  # Your updated summarizer
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "super-secret-key")
 
 # Azure config
 AZURE_CONNECTION_STRING = os.getenv("AZURE_BLOB_CONNECTION_STRING")
@@ -22,8 +23,8 @@ container_client = blob_service_client.get_container_client(BLOB_CONTAINER_NAME)
 @app.route("/", methods=["GET", "POST"])
 def upload():
     hostname = socket.gethostname()
-    message = ""
-    summary = None
+    message = session.pop("message", "")
+    summary = session.pop("summary", None)
 
     if request.method == "POST":
         uploaded_file = request.files["pdf"]
@@ -44,12 +45,15 @@ def upload():
                 summary_blob = container_client.get_blob_client(uploaded_file.filename + ".summary.txt")
                 summary_blob.upload_blob(summary, overwrite=True)
 
-                message = f"✅ Uploaded PDF and summary: {uploaded_file.filename}"
+                session["message"] = f"✅ Uploaded PDF and summary: {uploaded_file.filename}"
+                session["summary"] = summary
 
             except Exception as e:
-                message = f"❌ Upload failed: {e}"
+                session["message"] = f"❌ Upload failed: {e}"
         else:
-            message = "❗ Please upload a valid PDF file."
+            session["message"] = "❗ Please upload a valid PDF file."
+
+        return redirect(url_for("upload"))  # 🔁 Prevent form re-submission
 
     # Prepare list of PDFs with summaries
     blobs = list(container_client.list_blobs())
