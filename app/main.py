@@ -1,74 +1,87 @@
 from flask import Flask, request, render_template, send_file
-import socket
-import os
 from azure.storage.blob import BlobServiceClient
-from io import BytesIO
 from dotenv import load_dotenv
-from pdf_summarizer import summarize_pdf
+from io import BytesIO
+import os
+import socket
 
-# === Load environment variables from .env ===
+from pdf_summarizer import summarize_pdf  # Your updated summarizer
+
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
-# === Azure Blob Config ===
+# Azure config
 AZURE_CONNECTION_STRING = os.getenv("AZURE_BLOB_CONNECTION_STRING")
 BLOB_CONTAINER_NAME = os.getenv("STORAGE_CONTAINER_NAME", "documents")
 
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 container_client = blob_service_client.get_container_client(BLOB_CONTAINER_NAME)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def upload():
     hostname = socket.gethostname()
-    message = ''
+    message = ""
+    summary = None
 
-    if request.method == 'POST':
-        uploaded_file = request.files['pdf']
+    if request.method == "POST":
+        uploaded_file = request.files["pdf"]
 
-        if uploaded_file.filename.endswith('.pdf'):
+        if uploaded_file.filename.endswith(".pdf"):
             try:
+                # Read file once into memory
                 pdf_data = uploaded_file.read()
-                summary = summarize_pdf(pdf_data)
 
                 # Upload PDF
                 pdf_blob = container_client.get_blob_client(uploaded_file.filename)
                 pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
 
-                # Save summary as a .summary.txt blob
-                summary_blob_name = uploaded_file.filename + ".summary.txt"
-                summary_blob = container_client.get_blob_client(summary_blob_name)
+                # Summarize
+                summary = summarize_pdf(pdf_data)
+
+                # Upload summary
+                summary_blob = container_client.get_blob_client(uploaded_file.filename + ".summary.txt")
                 summary_blob.upload_blob(summary, overwrite=True)
 
-
-
-
-
-                # Upload the PDF file
-                # pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
-                # summary = summarize_pdf(pdf_data)
-                message = f"✅ Uploaded PDF and note: {uploaded_file.filename}"
+                message = f"✅ Uploaded PDF and summary: {uploaded_file.filename}"
 
             except Exception as e:
                 message = f"❌ Upload failed: {e}"
-
         else:
             message = "❗ Please upload a valid PDF file."
 
-    # List only PDF files (filtering out .note.txt files)
-    blobs = container_client.list_blobs()
-    blob_list = [blob.name for blob in blobs if not blob.name.endswith(".note.txt")]
+    # Prepare list of PDFs with summaries
+    blobs = list(container_client.list_blobs())
+    pdfs = []
+
+    for blob in blobs:
+        if blob.name.endswith(".pdf"):
+            summary_blob_name = blob.name + ".summary.txt"
+            summary_text = "❌ No summary available"
+
+            try:
+                summary_blob = container_client.get_blob_client(summary_blob_name)
+                if summary_blob.exists():
+                    summary_text = summary_blob.download_blob().readall().decode("utf-8")
+            except:
+                pass
+
+            pdfs.append({
+                "filename": blob.name,
+                "summary": summary_text
+            })
 
     return render_template(
         "index.html",
         hostname=hostname,
         message=message,
-        blob_list=blob_list,
-        summary=summary if 'summary' in locals() else None
+        summary=summary,
+        pdfs=pdfs
     )
 
 
-@app.route('/download/<filename>')
+@app.route("/download/<filename>")
 def download_file(filename):
     try:
         blob_client = container_client.get_blob_client(filename)
@@ -76,24 +89,24 @@ def download_file(filename):
         return send_file(BytesIO(stream), download_name=filename, as_attachment=True)
     except Exception as e:
         return f"Error downloading file: {e}", 500
-    
-@app.route('/delete/<filename>', methods=['POST'])
+
+
+@app.route("/delete/<filename>", methods=["POST"])
 def delete_file(filename):
     try:
         # Delete PDF
-        blob_client = container_client.get_blob_client(filename)
-        blob_client.delete_blob()
+        pdf_blob = container_client.get_blob_client(filename)
+        pdf_blob.delete_blob()
 
-        # Also delete the associated note, if it exists
-        note_blob_name = filename + ".note.txt"
-        note_blob = container_client.get_blob_client(note_blob_name)
-        if note_blob.exists():
-            note_blob.delete_blob()
+        # Delete associated summary
+        summary_blob = container_client.get_blob_client(filename + ".summary.txt")
+        if summary_blob.exists():
+            summary_blob.delete_blob()
 
         return "Deleted", 204
     except Exception as e:
         return f"Error deleting file: {e}", 500
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
