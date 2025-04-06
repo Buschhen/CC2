@@ -38,3 +38,22 @@ output "app_vm_ips" {
     azurerm_linux_virtual_machine.vm2.private_ip_address
   ])
 }
+
+output "sql_env_vars" {
+  value = <<EOT
+SQL_SERVER=${azurerm_mssql_server.main.name}.database.windows.net
+SQL_DATABASE=${azurerm_mssql_database.documents.name}
+SQL_USERNAME=${var.sql_admin}
+SQL_PASSWORD=${var.sql_password}
+EOT
+
+  sensitive = true
+}
+
+output "blob_env_vars" {
+  value = <<EOT
+AZURE_CONNECTION_STRING=${azurerm_storage_account.docs.primary_connection_string}
+BLOB_CONTAINER_NAME=documents
+EOT
+  sensitive = true
+}

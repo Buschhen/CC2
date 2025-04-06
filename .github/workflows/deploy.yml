@@ -84,6 +84,18 @@ jobs:
           echo "bastion_ip=$(cd $TF_DIR && terraform output -raw bastion_ip)" >> $GITHUB_OUTPUT
           echo "app_vm_ips=$(cd $TF_DIR && terraform output -json app_vm_ips)" >> $GITHUB_OUTPUT
 
+      - name: Generate .env from Terraform outputs
+        run: |
+          terraform output -raw sql_env_vars > .env
+          terraform output -raw blob_env_vars >> .env
+          
+      - name: Upload .env artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: env
+          path: .env
+
+
 
   ansible:
     name: Configure VMs with Ansible via Bastion

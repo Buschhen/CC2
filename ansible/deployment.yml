@@ -41,6 +41,30 @@
       pip:
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
+
+
+    - name: Download .env artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: env
+
+    # - name: Upload .env file
+    #   copy:
+    #     src: ".env"
+    #     dest: "{{ project_dir }}/.env"
+    #     owner: azureuser
+    #     group: azureuser
+    #     mode: "0600"
+
+    - name: Upload .env file to Flask app directory
+      copy:
+        src: "./.env"
+        dest: "{{ project_dir }}/app/.env"
+        owner: azureuser
+        group: azureuser
+        mode: '0600'
+
+
     
     - name: Copy systemd service file for Flask
       template:
