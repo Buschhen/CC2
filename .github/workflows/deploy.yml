@@ -139,11 +139,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: secrets
-          path: ./secrets
+          path: ./ansible/secrets
 
       - name: Confirm secrets.json exists
         run: |
-          ls -alh ./secrets
+          ls -alh ./ansible/secrets
 
       - name: SSH to Bastion and run Ansible
         env:
