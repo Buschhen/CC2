@@ -58,31 +58,31 @@ output "app_vm_ips" {
 #   sensitive = true
 # }
 
-output "sql_server_name" {
-  value = azurerm_mssql_server.main.name
-}
+# output "sql_server_name" {
+#   value = azurerm_mssql_server.main.name
+# }
 
-output "sql_server_fqdn" {
-  value = azurerm_mssql_server.main.fully_qualified_domain_name
-}
+# output "sql_server_fqdn" {
+#   value = azurerm_mssql_server.main.fully_qualified_domain_name
+# }
 
-output "sql_database_name" {
-  value = azurerm_mssql_database.documents.name
-}
+# output "sql_database_name" {
+#   value = azurerm_mssql_database.documents.name
+# }
 
-output "sql_admin_login" {
-  value = azurerm_mssql_server.main.administrator_login
-}
+# output "sql_admin_login" {
+#   value = azurerm_mssql_server.main.administrator_login
+# }
 
-output "sql_admin_password" {
-  value     = var.sql_password
-  sensitive = true
-}
+# output "sql_admin_password" {
+#   value     = var.sql_password
+#   sensitive = true
+# }
 
-output "sqlalchemy_connection_string" {
-  value = "mssql+pyodbc://${azurerm_mssql_server.main.administrator_login}:${var.sql_password}@${azurerm_mssql_server.main.fully_qualified_domain_name}/${azurerm_mssql_database.documents.name}?driver=ODBC+Driver+17+for+SQL+Server"
-  sensitive = true
-}
+# output "sqlalchemy_connection_string" {
+#   value = "mssql+pyodbc://${azurerm_mssql_server.main.administrator_login}:${var.sql_password}@${azurerm_mssql_server.main.fully_qualified_domain_name}/${azurerm_mssql_database.documents.name}?driver=ODBC+Driver+17+for+SQL+Server"
+#   sensitive = true
+# }
 
 output "azure_blob_connection_string" {
   value     = azurerm_storage_account.docs.primary_connection_string
