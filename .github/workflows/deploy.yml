@@ -98,8 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: env
-          path: ./.env
-          working-directory: ${{ github.workspace }}
+          path: ../.env
 
 
 
