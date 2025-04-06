@@ -89,10 +89,11 @@ jobs:
           cd $TF_DIR
           terraform output -raw sql_env_vars > .env
           terraform output -raw blob_env_vars >> .env
-
-      - name: Check .env file exists
-        run: |
           ls -ahl
+
+      # - name: Check .env file exists
+      #   run: |
+
 
       - name: Upload .env artifact
         uses: actions/upload-artifact@v4
