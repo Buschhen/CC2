@@ -53,6 +53,7 @@ jobs:
 
       TF_VAR_ssh_public_key: ${{ secrets.TF_VAR_ssh_public_key }}
       TF_VAR_sql_password: ${{ secrets.TF_VAR_sql_password }}
+      TF_VAR_openai_key: ${{ secrets.TF_VAR_openai_key }}
 
 
       TF_VAR_admin_username: ${{ vars.TF_VAR_admin_username}}
