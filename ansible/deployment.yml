@@ -12,7 +12,7 @@
   tasks:
 
     - name: Generate hierarchical directory visualization
-      command: tree /path/to/target/directory
+      command: tree 
       register: tree_structure
       ignore_errors: true
 
