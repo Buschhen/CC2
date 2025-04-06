@@ -146,7 +146,6 @@ jobs:
           echo "Current directory: $(pwd)"
           find . -type f -name "secrets.json"
 
-
       - name: Confirm secrets.json exists
         run: |
           tree
@@ -170,6 +169,8 @@ jobs:
 
           scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
           scp -o StrictHostKeyChecking=no -i id_rsa id_rsa azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no -i id_rsa ./ansible/secrets/secrets.json azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
+
 
           # Escape properly and SSH to bastion
           ssh -o StrictHostKeyChecking=no azureuser@${{ needs.terraform.outputs.bastion_ip }} <<EOF
@@ -179,6 +180,8 @@ jobs:
 
             mv inventory.ini ./repo/ansible/
             cd repo/ansible
+
+            mv secrets.json ./repo/ansible/
 
             echo -e "[defaults]\nhost_key_checking = False" > ansible.cfg
             chmod 600 ~/.ssh/id_rsa
