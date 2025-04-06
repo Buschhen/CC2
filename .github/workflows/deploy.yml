@@ -91,7 +91,8 @@ jobs:
           mkdir ../envtest
           terraform output -raw sql_env_vars > ../envtest/.env
           terraform output -raw blob_env_vars >> ../envtest/.env
-          ls -ahl ../envtest
+          cd ..
+          ls
 
       # - name: Check .env file exists
       #   run: |
