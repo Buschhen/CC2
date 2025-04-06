@@ -184,6 +184,7 @@ jobs:
             mv secrets.json ./repo/ansible/
             cd repo/ansible
 
+
             ls -la
 
             echo -e "[defaults]\nhost_key_checking = False" > ansible.cfg
