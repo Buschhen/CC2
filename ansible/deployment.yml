@@ -68,16 +68,6 @@
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
 
-
-    - name: Generate hierarchical directory visualization
-      command: tree ./
-      register: tree_structure
-      ignore_errors: true
-
-    - name: Present directory structure for diagnostic examination
-      debug:
-        var: tree_structure.stdout
-        
     - name: Copy secrets.json to VM
       copy:
         src: secrets/secrets.json

@@ -141,6 +141,12 @@ jobs:
           name: secrets
           path: ./ansible/secrets
 
+      - name: debug:show files before Ansible runs
+        run: |
+          echo "Current directory: $(pwd)"
+          find . -type f -name "secrets.json"
+
+
       - name: Confirm secrets.json exists
         run: |
           tree
