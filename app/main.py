@@ -1,7 +1,5 @@
-from flask import Flask, request, redirect, render_template_string, send_file
+from flask import Flask, request, render_template_string, send_file
 import socket
-from sqlalchemy import create_engine, text
-from sqlalchemy.exc import SQLAlchemyError
 import os
 from azure.storage.blob import BlobServiceClient
 from io import BytesIO
@@ -19,10 +17,6 @@ BLOB_CONTAINER_NAME = os.getenv("STORAGE_CONTAINER_NAME", "documents")
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 container_client = blob_service_client.get_container_client(BLOB_CONTAINER_NAME)
 
-# === Azure SQLAlchemy connection string ===
-sqlalchemy_conn_str = os.getenv("SQLALCHEMY_CONNECTION_STRING")
-engine = create_engine(sqlalchemy_conn_str, pool_pre_ping=True)
-
 @app.route('/', methods=['GET', 'POST'])
 def upload():
     hostname = socket.gethostname()
@@ -34,31 +28,16 @@ def upload():
 
         if uploaded_file.filename.endswith('.pdf'):
             try:
-                # Upload to Azure Blob Storage
-                blob_client = container_client.get_blob_client(uploaded_file.filename)
-                blob_client.upload_blob(uploaded_file.stream, overwrite=True)
+                # Upload the PDF file
+                pdf_blob = container_client.get_blob_client(uploaded_file.filename)
+                pdf_blob.upload_blob(uploaded_file.stream, overwrite=True)
 
-                # Save metadata to Azure SQL using SQLAlchemy
-                with engine.begin() as conn:
-                    # Create table if not exists
-                    conn.execute(text("""
-                        IF NOT EXISTS (
-                            SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'documents'
-                        )
-                        CREATE TABLE documents (
-                            id INT IDENTITY PRIMARY KEY,
-                            filename NVARCHAR(255),
-                            note NVARCHAR(MAX)
-                        )
-                    """))
+                # Upload the note as a .txt file
+                note_blob_name = uploaded_file.filename + ".note.txt"
+                note_blob = container_client.get_blob_client(note_blob_name)
+                note_blob.upload_blob(note, overwrite=True)
 
-                    # Insert document metadata
-                    conn.execute(
-                        text("INSERT INTO documents (filename, note) VALUES (:filename, :note)"),
-                        {"filename": uploaded_file.filename, "note": note}
-                    )
-
-                message = f"✅ Uploaded to Blob and saved to DB: {uploaded_file.filename}"
+                message = f"✅ Uploaded PDF and note: {uploaded_file.filename}"
 
             except Exception as e:
                 message = f"❌ Upload failed: {e}"
@@ -66,9 +45,9 @@ def upload():
         else:
             message = "❗ Please upload a valid PDF file."
 
-    # List existing blobs
+    # List only PDF files (filtering out .note.txt files)
     blobs = container_client.list_blobs()
-    blob_list = [blob.name for blob in blobs]
+    blob_list = [blob.name for blob in blobs if not blob.name.endswith(".note.txt")]
 
     return render_template_string("""
         <h2>Upload a PDF and a note ({{ hostname }})</h2>
