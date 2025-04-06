@@ -358,18 +358,21 @@ resource "random_id" "rand" {
 }
 
 
-resource "local_file" "secrets_file" {
-  content = jsonencode({
-    sqlalchemy_connection_string = format(
-      "mssql+pyodbc://%s:%s@%s/%s?driver=ODBC+Driver+17+for+SQL+Server",
-      azurerm_mssql_server.main.administrator_login,
-      var.sql_password,
-      azurerm_mssql_server.main.fully_qualified_domain_name,
-      azurerm_mssql_database.documents.name
-    ),
-    azure_blob_connection_string = azurerm_storage_account.docs.primary_connection_string,
-    storage_container_name        = azurerm_storage_container.pdfs.name
-  })
+resource "local_file" "secrets_env" {
+  content = format(
+    <<EOT
+SQLALCHEMY_CONNECTION_STRING="mssql+pyodbc://%s:%s@%s/%s?driver=ODBC+Driver+17+for+SQL+Server"
+AZURE_BLOB_CONNECTION_STRING="%s"
+STORAGE_CONTAINER_NAME="%s"
+EOT
+    ,
+    azurerm_mssql_server.main.administrator_login,
+    var.sql_password,
+    azurerm_mssql_server.main.fully_qualified_domain_name,
+    azurerm_mssql_database.documents.name,
+    azurerm_storage_account.docs.primary_connection_string,
+    azurerm_storage_container.pdfs.name
+  )
 
-  filename = "../secrets.json"
+  filename = "../.env"
 }

@@ -87,16 +87,16 @@ jobs:
           # echo "azure_blob_connection_string=$(cd $TF_DIR && terraform output -raw azure_blob_connection_string)" >> $GITHUB_OUTPUT"
           # echo "storage_container_name=$(cd $TF_DIR && terraform output -raw storage_container_name)" >> $GITHUB_OUTPUT"
 
-      - name: Verify secrets exists
+      - name: Verify .env exists
         run: |
           echo "Current dir: $(pwd)"
           ls -alh 
 
-      - name: Upload secrets.json as artifact
+      - name: Upload .env as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: secrets
-          path: secrets.json
+          name: env
+          path: .env
 
       # - name: Generate .env from Terraform outputs
       #   run: |
@@ -135,18 +135,18 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Download secrets.json artifact
+      - name: Download .env artifact
         uses: actions/download-artifact@v4
         with:
-          name: secrets
+          name: env
           path: ./
 
       - name: debug:show files before Ansible runs
         run: |
           echo "Current directory: $(pwd)"
-          find . -type f -name "secrets.json"
+          find . -type f -name ".env"
 
-      - name: Confirm secrets.json exists
+      - name: Confirm .env exists
         run: |
           tree
 
@@ -171,7 +171,7 @@ jobs:
 
           scp -o StrictHostKeyChecking=no -i id_rsa inventory.ini azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
           scp -o StrictHostKeyChecking=no -i id_rsa id_rsa azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -i id_rsa secrets.json azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
+          scp -o StrictHostKeyChecking=no -i id_rsa .env azureuser@${{ needs.terraform.outputs.bastion_ip }}:/home/azureuser
 
 
           # Escape properly and SSH to bastion
@@ -181,7 +181,7 @@ jobs:
             rm -rf repo && git clone https://github.com/Buschhen/CC2.git repo
 
             mv inventory.ini ./repo/ansible/
-            mv secrets.json ./repo/ansible/
+            mv .env ./repo/ansible/
             cd repo/ansible
 
 

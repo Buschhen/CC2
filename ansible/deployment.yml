@@ -7,7 +7,6 @@
     project_dir: /repo
     repo_url: https://github.com/Buschhen/CC2.git
     venv_dir: /repo/venv
-    secrets_file: "/secrets.json"  # Adjust to reflect repository apex location
 
   tasks:
     - name: Install required apt packages
@@ -68,10 +67,10 @@
         requirements: "{{ project_dir }}/requirements.txt"
         virtualenv: "{{ venv_dir }}"
 
-    - name: Copy secrets.json to VM
+    - name: Copy .env to VM
       copy:
-        src: secrets.json
-        dest: "{{ project_dir }}/app/secrets.json"
+        src: .env
+        dest: "{{ project_dir }}/app/.env"
         owner: azureuser
         group: azureuser
         mode: "0600"
