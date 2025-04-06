@@ -314,7 +314,7 @@ resource "azurerm_storage_account" "docs" {
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  public_network_access_enabled = true # ❗ wichtig
+  public_network_access_enabled = true
 
   network_rules {
     default_action             = "Deny"
@@ -340,7 +340,7 @@ resource "azurerm_mssql_server" "main" {
   version                      = "12.0"
   administrator_login          = var.sql_admin
   administrator_login_password = var.sql_password
-  public_network_access_enabled = true
+  public_network_access_enabled = false
 
   minimum_tls_version = "1.2"
 }
