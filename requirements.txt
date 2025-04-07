@@ -4,3 +4,5 @@ pymupdf
 tiktoken
 python-dotenv
 azure-storage-blob
+pytest
+pytest-mock

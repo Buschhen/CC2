@@ -1,4 +1,0 @@
-flask
-python-dotenv
-azure-storage-blob
-sqlalchemy
