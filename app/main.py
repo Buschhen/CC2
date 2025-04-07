@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "super-secret-key")
 
 # Azure config
-AZURE_CONNECTION_STRING = os.getenv("AZURE_BLOB_CONNECTION_STRING")
+AZURE_CONNECTION_STRING = os.getenv("AZURE_BLOB_CONNECTION_STRING", "test")
 BLOB_CONTAINER_NAME = os.getenv("STORAGE_CONTAINER_NAME", "documents")
 
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
