@@ -5,7 +5,7 @@ from io import BytesIO
 import os
 import socket
 
-from pdf_summarizer import summarize_pdf  # Your updated summarizer
+from app.pdf_summarizer import summarize_pdf  # Your updated summarizer
 
 # Load environment variables
 load_dotenv()
