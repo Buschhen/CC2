@@ -1,13 +1,14 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from app.pdf_summarizer import summarize_pdf
 
-def test_summarize_pdf_with_mock():
-    dummy_input = "This is dummy PDF content."
+@patch("app.pdf_summarizer.OpenAI")  # <- korrektes Patch-Ziel
+def test_summarize_pdf_with_mock(mock_openai_class):
+    # Setup fake OpenAI client
+    mock_client = MagicMock()
+    mock_client.chat.completions.create.return_value = {
+        "choices": [{"message": {"content": "Fake summary"}}]
+    }
+    mock_openai_class.return_value = mock_client
 
-    with patch('pdf_summarizer.openai.ChatCompletion.create') as mock_openai:
-        mock_openai.return_value = {
-            "choices": [{"message": {"content": "Dies ist eine zusammengefasste Version"}}]
-        }
-
-        summary = summarize_pdf(dummy_input)
-        assert "zusammengefasste" in summary
+    result = summarize_pdf("This is dummy PDF content.")
+    assert "Fake summary" in result
