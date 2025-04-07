@@ -1,14 +1,16 @@
-from unittest.mock import patch, MagicMock
-from app.pdf_summarizer import summarize_pdf
+from app.pdf_summarizer import extract_text_from_pdf
+from io import BytesIO
+from reportlab.pdfgen import canvas
 
-@patch("app.pdf_summarizer.extract_text_from_pdf", return_value="Extracted text from PDF")
-@patch("app.pdf_summarizer.OpenAI")
-def test_summarize_pdf_with_mock(mock_openai_class, mock_extract):
-    mock_openai = MagicMock()
-    mock_openai.chat.completions.create.return_value = {
-        "choices": [{"message": {"content": "Fake summary"}}]
-    }
-    mock_openai_class.return_value = mock_openai
+def test_extract_text_from_pdf():
+    # Erzeuge ein einfaches PDF mit Text "Hello PDF"
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer)
+    c.drawString(100, 750, "Hello PDF")
+    c.save()
+    buffer.seek(0)
 
-    result = summarize_pdf(b"%PDF-1.4...")
-    assert "Fake summary" in result
+    pdf_bytes = buffer.read()
+    text = extract_text_from_pdf(pdf_bytes)
+
+    assert "Hello PDF" in text
