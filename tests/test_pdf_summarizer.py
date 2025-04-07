@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from pdf_summarizer import summarize_pdf
+from app.pdf_summarizer import summarize_pdf
 
 def test_summarize_pdf_with_mock():
     dummy_input = "This is dummy PDF content."

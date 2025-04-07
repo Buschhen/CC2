@@ -31,7 +31,7 @@ jobs:
 
       - name: Run tests
         run: |
-          export PYTHONPATH=/app
+          export PYTHONPATH=.
           pytest
 
 
