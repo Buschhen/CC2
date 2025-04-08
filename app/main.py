@@ -5,7 +5,7 @@ from io import BytesIO
 import os
 import socket
 
-from pdf_summarizer import summarize_pdf  # Your updated summarizer
+from pdf_summarizer import summarize_pdf
 
 # Load environment variables
 load_dotenv()
@@ -13,7 +13,6 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "super-secret-key")
 
-# Azure config
 AZURE_CONNECTION_STRING = os.getenv("AZURE_BLOB_CONNECTION_STRING")
 BLOB_CONTAINER_NAME = os.getenv("STORAGE_CONTAINER_NAME", "documents")
 
@@ -31,15 +30,15 @@ def upload():
 
         if uploaded_file.filename.endswith(".pdf"):
             try:
-                # Read file once
+
                 pdf_data = uploaded_file.read()
                 file_size = len(pdf_data)
 
-                # Upload original file (standard name)
+
                 pdf_blob = container_client.get_blob_client(uploaded_file.filename)
                 pdf_blob.upload_blob(BytesIO(pdf_data), overwrite=True)
 
-                # ✅ Build summary key
+
                 summary_key = f"{uploaded_file.filename}.{file_size}.summary.txt"
                 summary_blob = container_client.get_blob_client(summary_key)
 
@@ -58,11 +57,11 @@ def upload():
             session["message"] = "❗ Please upload a valid PDF file."
 
 
-        return redirect(url_for("upload"))  # 🔁 Prevent form re-submission
+        return redirect(url_for("upload"))
 
-    # Prepare list of PDFs with summaries
+
     blobs = list(container_client.list_blobs())
-    # After listing all blobs
+
     pdfs = []
 
     for blob in blobs:
@@ -74,7 +73,6 @@ def upload():
             summary_text = "❌ No summary available"
 
             if matching_summaries:
-                # Use the first one (or latest)
                 summary_blob = container_client.get_blob_client(matching_summaries[0])
                 summary_text = summary_blob.download_blob().readall().decode("utf-8")
 
@@ -106,11 +104,9 @@ def download_file(filename):
 @app.route("/delete/<filename>", methods=["POST"])
 def delete_file(filename):
     try:
-        # Delete PDF
         pdf_blob = container_client.get_blob_client(filename)
         pdf_blob.delete_blob()
 
-        # Delete associated summary
         summary_blob = container_client.get_blob_client(filename + ".summary.txt")
         if summary_blob.exists():
             summary_blob.delete_blob()

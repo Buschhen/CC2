@@ -32,35 +32,6 @@
       args:
         executable: /bin/bash
 
-
-
-    # - name: Generate hierarchical directory visualization
-    #   command: tree ./
-    #   register: tree_structure
-    #   ignore_errors: true
-
-    # - name: Present directory structure for diagnostic examination
-    #   debug:
-    #     var: tree_structure.stdout
-
-    # - name: Retrieve file metadata on target machine
-    #   stat:
-    #     path: "{{ secrets_file }}"
-    #   register: file_status
-
-    # - name: Display file properties for debugging purposes
-    #   debug:
-    #     msg: >
-    #       Existence verification: {{ file_status.stat.exists }}.
-    #       Detailed attributes: {{ file_status.stat }}
-
-    # - name: Import concealed parameters from JSON artifact
-    #   set_fact:
-    #     credentials: "{{ lookup('file', '../secrets.json') | from_json }}"
-    # - name: Exhibit extracted secure elements (illustrative)
-    #   debug:
-    #     msg: "storage_container_name: {{ credentials.storage_container_name }}"
-
     - name: 🔍 DEBUG - Show current hostname
       command: hostname
       register: hostname_output
@@ -158,6 +129,3 @@
     - name: 🧾 Print Flask logs
       debug:
         var: flask_logs.stdout_lines
-
-
-####################

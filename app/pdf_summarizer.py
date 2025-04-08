@@ -1,16 +1,15 @@
-import fitz  # PyMuPDF
+import fitz
 import tiktoken
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
-# Load API key from .env
 load_dotenv()
 OPENAI_KEY = os.getenv("OPENAI_KEY", "test")
 
 client = OpenAI(api_key=OPENAI_KEY)
 
-MAX_TOKENS_PER_CHUNK = 3000  # Adjust based on your model context
+MAX_TOKENS_PER_CHUNK = 3000
 
 def extract_text_from_pdf(file_bytes):
     doc = fitz.open(stream=file_bytes, filetype="pdf")
